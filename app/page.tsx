@@ -4,7 +4,6 @@ import { Highlights } from "@/components/highlights"
 import { Button } from "@/components/ui/button"
 import { ProductCard } from "@/components/product-card"
 import { WhatsAppFloat } from "@/components/whatsapp-float"
-import { PriceCalculator } from "@/components/price-calculator"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { GalleryPreview } from "@/components/gallery-preview"
 import { ContactSection } from "@/components/contact-section"
@@ -68,12 +67,42 @@ export default function Page() {
       </section>
 
       <section id="calculator" className="mx-auto max-w-6xl px-4 py-12 md:py-16">
-        <h2 className="font-serif text-2xl font-semibold md:text-3xl">Instant Wood Price Calculator</h2>
-        <p className="mt-2 max-w-2xl text-sm text-foreground/70">
-          Select wood type and size to estimate price. Rates per cubic foot.
-        </p>
-        <div className="mt-6">
-          <PriceCalculator />
+        <div className="text-center">
+          <h2 className="font-serif text-2xl font-semibold md:text-3xl">Professional Timber Calculator</h2>
+          <p className="mt-2 max-w-2xl mx-auto text-sm text-foreground/70">
+            Get instant pricing for your timber requirements with our Excel-like calculator. 
+            Calculate multiple items, generate professional quotes, and send directly via WhatsApp.
+          </p>
+          <div className="mt-8">
+            <Button asChild size="lg" className="bg-gradient-to-r from-accent to-yellow-500 text-gray-900 hover:from-yellow-500 hover:to-accent font-semibold px-8 py-4 text-lg rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200">
+              <a href="/calculator">
+                Open Professional Calculator
+              </a>
+            </Button>
+          </div>
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+            <div className="text-center p-4">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <span className="text-2xl">📊</span>
+              </div>
+              <h3 className="font-semibold text-sm">Excel-like Interface</h3>
+              <p className="text-xs text-foreground/70 mt-1">Familiar spreadsheet experience</p>
+            </div>
+            <div className="text-center p-4">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <span className="text-2xl">💰</span>
+              </div>
+              <h3 className="font-semibold text-sm">Instant Pricing</h3>
+              <p className="text-xs text-foreground/70 mt-1">Real-time calculations</p>
+            </div>
+            <div className="text-center p-4">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                <span className="text-2xl">📱</span>
+              </div>
+              <h3 className="font-semibold text-sm">WhatsApp Quote</h3>
+              <p className="text-xs text-foreground/70 mt-1">Send formatted quotes instantly</p>
+            </div>
+          </div>
         </div>
       </section>
 
