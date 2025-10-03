@@ -21,9 +21,9 @@ interface TimberItem {
 }
 
 const timberTypes = [
-  { name: 'Teak Wood', price: 4000, color: 'bg-amber-100 text-amber-800' },
-  { name: 'White Teak', price: 2800, color: 'bg-yellow-100 text-yellow-800' },
-  { name: 'Neem Wood', price: 1500, color: 'bg-green-100 text-green-800' },
+  { name: 'Teak Wood', color: 'bg-amber-100 text-amber-800' },
+  { name: 'White Teak', color: 'bg-yellow-100 text-yellow-800' },
+  { name: 'Neem Wood', color: 'bg-green-100 text-green-800' },
 ];
 
 export default function CalculatorPage() {
@@ -35,7 +35,7 @@ export default function CalculatorPage() {
       width: 6,
       thickness: 2,
       quantity: 10,
-      pricePerCubicFoot: 4000,
+      pricePerCubicFoot: 0,
       totalPrice: 0,
     }
   ]);
@@ -50,7 +50,7 @@ export default function CalculatorPage() {
 
   const calculateTotal = (item: TimberItem) => {
     const cubicFeet = (item.length * item.width * item.thickness) / 144; // Convert to cubic feet
-    return cubicFeet * item.quantity * item.pricePerCubicFoot;
+    return cubicFeet * item.quantity; // Just return cubic feet, no pricing
   };
 
   const updateItem = (id: string, field: keyof TimberItem, value: any) => {
@@ -58,8 +58,7 @@ export default function CalculatorPage() {
       if (item.id === id) {
         const updatedItem = { ...item, [field]: value };
         if (field === 'type') {
-          const timberType = timberTypes.find(t => t.name === value);
-          updatedItem.pricePerCubicFoot = timberType?.price || 0;
+          updatedItem.pricePerCubicFoot = 0; // No pricing
         }
         updatedItem.totalPrice = calculateTotal(updatedItem);
         return updatedItem;
@@ -76,7 +75,7 @@ export default function CalculatorPage() {
       width: 6,
       thickness: 2,
       quantity: 1,
-      pricePerCubicFoot: 4000,
+      pricePerCubicFoot: 0,
       totalPrice: 0,
     };
     newItem.totalPrice = calculateTotal(newItem);
@@ -87,7 +86,7 @@ export default function CalculatorPage() {
     setItems(items.filter(item => item.id !== id));
   };
 
-  const grandTotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
+  const totalCubicFeet = items.reduce((sum, item) => sum + item.totalPrice, 0);
 
   const generateQuote = () => {
     if (!customerInfo.name || !customerInfo.email || !customerInfo.phone || !customerInfo.address) {
@@ -100,7 +99,7 @@ export default function CalculatorPage() {
       const date = new Date().toLocaleDateString();
       const time = new Date().toLocaleTimeString();
       
-      let message = `🏗️ *TIMBER QUOTE REQUEST* 🏗️\n\n`;
+      let message = `🏗️ *TIMBER REQUIREMENT REQUEST* 🏗️\n\n`;
       message += `📅 *Date:* ${date} at ${time}\n\n`;
       
       // Customer Information
@@ -113,9 +112,9 @@ export default function CalculatorPage() {
       
       // Timber Items Table
       message += `📋 *TIMBER REQUIREMENTS:*\n`;
-      message += `┌─────────────────┬────────┬───────┬──────────┬──────────┬─────────┬─────────────┐\n`;
-      message += `│ Timber Type     │ Length │ Width │ Thickness│ Quantity │ Price   │ Total (₹)   │\n`;
-      message += `├─────────────────┼────────┼───────┼──────────┼──────────┼─────────┼─────────────┤\n`;
+      message += `┌─────────────────┬────────┬───────┬──────────┬──────────┬─────────────┐\n`;
+      message += `│ Timber Type     │ Length │ Width │ Thickness│ Quantity │ Cubic Feet  │\n`;
+      message += `├─────────────────┼────────┼───────┼──────────┼──────────┼─────────────┤\n`;
       
       items.forEach(item => {
         const type = item.type.padEnd(15);
@@ -123,27 +122,29 @@ export default function CalculatorPage() {
         const width = item.width.toString().padStart(5);
         const thickness = item.thickness.toString().padStart(8);
         const quantity = item.quantity.toString().padStart(8);
-        const price = `₹${item.pricePerCubicFoot}`.padStart(7);
-        const total = `₹${item.totalPrice.toLocaleString()}`.padStart(11);
+        const cubicFeet = `${item.totalPrice.toFixed(2)} cft`.padStart(11);
         
-        message += `│ ${type} │ ${length}ft │ ${width}" │ ${thickness}" │ ${quantity} │ ${price} │ ${total} │\n`;
+        message += `│ ${type} │ ${length}ft │ ${width}" │ ${thickness}" │ ${quantity} │ ${cubicFeet} │\n`;
       });
       
-      message += `└─────────────────┴────────┴───────┴──────────┴──────────┴─────────┴─────────────┘\n\n`;
+      message += `└─────────────────┴────────┴───────┴──────────┴──────────┴─────────────┘\n\n`;
       
       // Summary
-      message += `💰 *QUOTE SUMMARY:*\n`;
+      message += `📊 *SUMMARY:*\n`;
       message += `• Total Items: ${items.length}\n`;
-      message += `• Grand Total: *₹${grandTotal.toLocaleString()}*\n\n`;
+      message += `• Total Cubic Feet: *${totalCubicFeet.toFixed(2)} cft*\n\n`;
       
       // Additional Information
       message += `📝 *ADDITIONAL NOTES:*\n`;
-      message += `• Prices are per cubic foot\n`;
-      message += `• Delivery charges may apply\n`;
-      message += `• Quote valid for 7 days\n`;
-      message += `• Custom sizes available\n\n`;
-      
-      message += `Please confirm this quote and let us know your preferred delivery date. We'll contact you shortly to finalize the order.\n\n`;
+      message += `• Custom sizes available\n`;
+      message += `• Delivery across Karnataka\n`;
+      message += `• Quality guaranteed\n`;
+      message += `• Contact for pricing details\n`;
+      message += `\n📞 *CONTACT FOR QUOTE:*\n`;
+      message += `• Call: +91 9845378626\n`;
+      message += `• WhatsApp: This message\n`;
+      message += `• Location: KSSIDC Industrial Area, DVG Road, Chitradurga\n\n`;
+      message += `Please contact us for pricing details and to finalize your order.\n\n`;
       message += `Thank you for choosing Abuzar Industries! 🌟`;
       
       return message;
@@ -191,10 +192,10 @@ export default function CalculatorPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <FileSpreadsheet className="w-5 h-5" />
-                  Current Timber Prices
+                  Available Timber Types
                 </CardTitle>
                 <CardDescription>
-                  Base prices per cubic foot (rates may vary based on quality and availability)
+                  Premium timber types available for your requirements
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -206,7 +207,7 @@ export default function CalculatorPage() {
                         <p className="text-sm text-gray-600">Premium Quality</p>
                       </div>
                       <Badge className={timber.color}>
-                        ₹{timber.price}/cft
+                        Available
                       </Badge>
                     </div>
                   ))}
@@ -219,7 +220,7 @@ export default function CalculatorPage() {
               <CardHeader>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <CardTitle>Timber Calculation Sheet</CardTitle>
+                    <CardTitle>CutSize wood Calculation Sheet</CardTitle>
                     <CardDescription>
                       Add your timber requirements and get instant pricing
                     </CardDescription>
@@ -241,8 +242,7 @@ export default function CalculatorPage() {
                         <th className="text-left p-3 font-semibold text-gray-700">Width (in)</th>
                         <th className="text-left p-3 font-semibold text-gray-700">Thickness (in)</th>
                         <th className="text-left p-3 font-semibold text-gray-700">Quantity</th>
-                        <th className="text-left p-3 font-semibold text-gray-700">Price/cft</th>
-                        <th className="text-left p-3 font-semibold text-gray-700">Total (₹)</th>
+                        <th className="text-left p-3 font-semibold text-gray-700">Cubic Feet</th>
                         <th className="text-left p-3 font-semibold text-gray-700">Action</th>
                       </tr>
                     </thead>
@@ -302,11 +302,8 @@ export default function CalculatorPage() {
                             />
                           </td>
                           <td className="p-3">
-                            <span className="font-mono text-sm">₹{item.pricePerCubicFoot}</span>
-                          </td>
-                          <td className="p-3">
                             <span className="font-mono font-semibold text-primary">
-                              ₹{item.totalPrice.toLocaleString()}
+                              {item.totalPrice.toFixed(2)} cft
                             </span>
                           </td>
                           <td className="p-3">
@@ -339,7 +336,7 @@ export default function CalculatorPage() {
                           >
                             {timberTypes.map((timber) => (
                               <option key={timber.name} value={timber.name}>
-                                {timber.name} - ₹{timber.price}/cft
+                                {timber.name}
                               </option>
                             ))}
                           </select>
@@ -400,15 +397,11 @@ export default function CalculatorPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div>
-                          <p className="text-sm text-gray-600">Price per cft</p>
-                          <p className="font-mono text-sm">₹{item.pricePerCubicFoot}</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm text-gray-600">Total</p>
+                      <div className="flex items-center justify-center p-3 bg-gray-50 rounded-lg">
+                        <div className="text-center">
+                          <p className="text-sm text-gray-600">Cubic Feet</p>
                           <p className="font-mono font-semibold text-primary text-lg">
-                            ₹{item.totalPrice.toLocaleString()}
+                            {item.totalPrice.toFixed(2)} cft
                           </p>
                         </div>
                       </div>
@@ -420,12 +413,12 @@ export default function CalculatorPage() {
                 <div className="mt-6 p-4 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg border-2 border-primary/20">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">Grand Total</h3>
-                      <p className="text-sm text-gray-600">Including all timber requirements</p>
+                      <h3 className="text-lg font-semibold text-gray-900">Total Requirements</h3>
+                      <p className="text-sm text-gray-600">Contact for pricing details</p>
                     </div>
                     <div className="text-right">
                       <div className="text-3xl font-bold text-primary">
-                        ₹{grandTotal.toLocaleString()}
+                        {totalCubicFeet.toFixed(2)} cft
                       </div>
                       <div className="text-sm text-gray-600">
                         {items.length} item{items.length !== 1 ? 's' : ''}
@@ -517,13 +510,13 @@ export default function CalculatorPage() {
                           {item.length}ft × {item.width}" × {item.thickness}" × {item.quantity} pcs
                         </p>
                       </div>
-                      <span className="font-mono font-semibold">₹{item.totalPrice.toLocaleString()}</span>
+                      <span className="font-mono font-semibold">{item.totalPrice.toFixed(2)} cft</span>
                     </div>
                   ))}
                   <div className="border-t pt-4">
                     <div className="flex items-center justify-between text-lg font-bold">
-                      <span>Total Amount</span>
-                      <span className="text-primary">₹{grandTotal.toLocaleString()}</span>
+                      <span>Total Cubic Feet</span>
+                      <span className="text-primary">{totalCubicFeet.toFixed(2)} cft</span>
                     </div>
                   </div>
                 </div>
@@ -538,7 +531,7 @@ export default function CalculatorPage() {
                 className="flex items-center gap-2"
               >
                 <Download className="w-5 h-5" />
-                Download Quote
+                Download Requirements
               </Button>
               <Button
                 size="lg"
@@ -547,7 +540,7 @@ export default function CalculatorPage() {
                 disabled={!customerInfo.name || !customerInfo.email || !customerInfo.phone || !customerInfo.address}
               >
                 <Send className="w-5 h-5" />
-                Send Quote Request
+                Send Requirements
               </Button>
             </div>
           </TabsContent>
