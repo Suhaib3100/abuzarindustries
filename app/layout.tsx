@@ -7,6 +7,7 @@ import { Playfair_Display } from "next/font/google"
 import "./globals.css"
 import { FloatingHeader } from "@/components/ui/floating-header"
 import { SiteFooter } from "@/components/site-footer"
+import { VideoPopup } from "@/components/video-popup"
 import { Suspense } from "react"
 
 const playfair = Playfair_Display({
@@ -46,6 +47,7 @@ export default function RootLayout({
           <FloatingHeader />
           <main>{children}</main>
           <SiteFooter />
+          <VideoPopup />
           <Analytics />
         </Suspense>
       </body>
