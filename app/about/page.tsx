@@ -40,14 +40,14 @@ export default function AboutPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-center">
               {/* Athaulla Afroz - Chairman & Founder */}
               <div className="text-center">
-                <div className="w-64 h-80 relative overflow-hidden rounded-2xl mx-auto mb-6 shadow-lg">
+                <div className="w-72 h-96 relative overflow-hidden rounded-2xl mx-auto mb-6 shadow-xl border-4 border-white">
                   <Image
                     src="/images/afroz.jpg"
                     alt="Athaulla Afroz - Founder"
                     fill
-                    className="object-cover"
+                    className="object-cover object-top"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Athaulla Afroz</h3>
                 <p className="text-primary font-semibold text-lg mb-4">Chairman & Founder (1994)</p>
@@ -77,8 +77,14 @@ export default function AboutPage() {
 
               {/* Mohammed Afsar - Current Leader */}
               <div className="text-center">
-                <div className="w-64 h-80 bg-accent/10 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                  <Users className="w-20 h-20 text-accent" />
+                <div className="w-72 h-96 relative overflow-hidden rounded-2xl mx-auto mb-6 shadow-xl border-4 border-white">
+                  <Image
+                    src="/images/afsar.jpg"
+                    alt="Mohammed Afsar - Current Owner"
+                    fill
+                    className="object-cover object-top"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Mohammed Afsar</h3>
                 <p className="text-accent font-semibold text-lg mb-4">Current Owner & Leader</p>

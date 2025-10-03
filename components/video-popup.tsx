@@ -10,18 +10,27 @@ export function VideoPopup() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [showControls, setShowControls] = useState(true);
+  const [videoError, setVideoError] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
 
   useEffect(() => {
-    // Show popup after 15 seconds
-    const timer = setTimeout(() => {
-      setIsVisible(true);
-    }, 15000);
+    // Check if popup has already been shown
+    const hasSeenPopup = localStorage.getItem('abuzar-video-popup-seen');
+    
+    if (!hasSeenPopup) {
+      // Show popup after 15 seconds
+      const timer = setTimeout(() => {
+        setIsVisible(true);
+      }, 15000);
 
-    return () => clearTimeout(timer);
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   const handleClose = () => {
     setIsVisible(false);
+    // Mark popup as seen in localStorage
+    localStorage.setItem('abuzar-video-popup-seen', 'true');
   };
 
   const togglePlay = () => {
@@ -34,6 +43,16 @@ export function VideoPopup() {
 
   const handleVideoClick = () => {
     setShowControls(!showControls);
+  };
+
+  const handleVideoLoad = () => {
+    setVideoLoaded(true);
+    setVideoError(false);
+  };
+
+  const handleVideoError = () => {
+    setVideoError(true);
+    setVideoLoaded(false);
   };
 
   if (!isVisible) return null;
@@ -61,17 +80,40 @@ export function VideoPopup() {
 
           {/* Video Container */}
           <div className="relative bg-black">
-            <video
-              className="w-full h-auto max-h-[60vh] object-cover"
-              controls={showControls}
-              muted={isMuted}
-              autoPlay
-              loop
-              onClick={handleVideoClick}
-            >
-              <source src="/videos/video1.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+            {videoError ? (
+              <div className="w-full h-64 flex items-center justify-center bg-gray-100">
+                <div className="text-center">
+                  <p className="text-gray-600 mb-2">Video not available</p>
+                  <p className="text-sm text-gray-500">Please check the video file</p>
+                </div>
+              </div>
+            ) : (
+              <video
+                className="w-full h-auto max-h-[60vh] object-cover"
+                controls={showControls}
+                muted={isMuted}
+                autoPlay
+                loop
+                playsInline
+                onClick={handleVideoClick}
+                onLoadedData={handleVideoLoad}
+                onError={handleVideoError}
+                preload="auto"
+                poster="/images/1.jpg"
+              >
+                <source src="/videos/video1.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            )}
+            
+            {!videoLoaded && !videoError && (
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+                  <p className="text-gray-600">Loading video...</p>
+                </div>
+              </div>
+            )}
 
             {/* Custom Controls Overlay */}
             {!showControls && (
