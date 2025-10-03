@@ -41,10 +41,6 @@ export function FloatingHeader() {
 			href: '/products',
 		},
 		{
-			label: 'Calculator',
-			href: '/calculator',
-		},
-		{
 			label: 'Gallery',
 			href: '/gallery',
 		},
@@ -73,7 +69,7 @@ export function FloatingHeader() {
 				'flex items-center justify-between transition-all duration-500 ease-in-out',
 				isScrolled ? 'p-4 px-6 sm:px-8 max-w-6xl mx-auto' : 'p-5 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto'
 			)}>
-				<div className="hover:bg-accent flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2 duration-300 group">
+				<a href="/" className="hover:bg-accent flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2 duration-300 group">
 					<div className={cn(
 						"bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center group-hover:scale-110 transition-all duration-300",
 						isScrolled ? "w-7 h-7" : "w-8 h-8"
@@ -93,7 +89,7 @@ export function FloatingHeader() {
 							isScrolled ? "text-xs" : "text-xs"
 						)}>INDUSTRIES</p>
 					</div>
-				</div>
+				</a>
 				<div className="hidden items-center gap-1 lg:flex">
 					{links.map((link) => (
 						<a

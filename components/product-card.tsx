@@ -9,13 +9,25 @@ type ProductCardProps = {
 }
 
 export function ProductCard({ title, imageQuery, sizes, price }: ProductCardProps) {
+  // Map different products to different images
+  const getImageSrc = (title: string) => {
+    switch (title) {
+      case "Teak Wood Planks":
+        return "/images/1.jpg"
+      case "White Teak Wood Planks":
+        return "/images/2.jpg"
+      case "Neem Wood Planks":
+        return "/images/3.jpg"
+      default:
+        return "/images/1.jpg"
+    }
+  }
+
   return (
     <div className="flex flex-col rounded-lg border bg-card">
       <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
         <Image
-          src={imageQuery === "teak%20wood%20planks%20stack" ? "/images/2.jpg" : 
-                imageQuery === "white%20teak%20wood%20planks%20stack" ? "/images/abuzar-wood.jpg" : 
-                "/images/2.jpg"}
+          src={getImageSrc(title)}
           alt={`${title} product photo`}
           fill
           className="object-cover"
