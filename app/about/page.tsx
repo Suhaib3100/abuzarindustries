@@ -26,7 +26,7 @@ export default function AboutPage() {
           <div className="text-center mb-16">
             <Badge className="mb-4 bg-primary/20 text-primary border-primary/30">
               <Calendar className="w-4 h-4 mr-2" />
-              Established 1994
+              Established 1995
             </Badge>
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
               About <span className="text-primary">Abuzar Industries</span>
@@ -50,15 +50,15 @@ export default function AboutPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Athaulla Afroz</h3>
-                <p className="text-primary font-semibold text-lg mb-4">Chairman & Founder (1994)</p>
+                <p className="text-primary font-semibold text-lg mb-4">Chairman & Founder (1995)</p>
                 <p className="text-gray-600 mb-6 leading-relaxed">
-                  Founded Abuzar Industries in 1994 after facing numerous struggles and challenges. 
+                  Founded Abuzar Industries in 1995 after facing numerous struggles and challenges. 
                   With determination and vision, he built the company from ground up, establishing 
                   a reputation for quality timber supply in the construction industry.
                 </p>
                 <div className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-full text-sm font-medium">
                   <Calendar className="w-4 h-4 mr-2" />
-                  Started in 1994
+                  Started in 1995
                 </div>
               </div>
 
@@ -109,7 +109,7 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Values</h2>
-            <p className="text-lg text-gray-600">Principles that guide us since 1994</p>
+            <p className="text-lg text-gray-600">Principles that guide us since 1995</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
