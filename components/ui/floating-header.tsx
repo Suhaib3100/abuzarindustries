@@ -1,344 +1,162 @@
-Copy - paste
-this
-component
-to / components / ui
-folder:
-\`\`\`tsx
-floating-header.tsx
-import React from "react"
-import { Grid2x2PlusIcon, MenuIcon } from "lucide-react"
-import { Sheet, SheetContent, SheetFooter } from "@/components/ui/sheet"
-import { Button, buttonVariants } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+'use client';
+
+import React from 'react';
+import { Grid2x2PlusIcon, MenuIcon } from 'lucide-react';
+import { Sheet, SheetContent, SheetFooter } from '@/components/ui/sheet';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 export function FloatingHeader() {
-  const [open, setOpen] = React.useState(false)
+	const [open, setOpen] = React.useState(false);
+	const [isScrolled, setIsScrolled] = React.useState(false);
 
-  const links = [
-    {
-      label: "Features",
-      href: "#",
-    },
-    {
-      label: "Pricing",
-      href: "#",
-    },
-    {
-      label: "About",
-      href: "#",
-    },
-  ]
+	React.useEffect(() => {
+		let ticking = false;
+		
+		const handleScroll = () => {
+			if (!ticking) {
+				requestAnimationFrame(() => {
+					setIsScrolled(window.scrollY > 100);
+					ticking = false;
+				});
+				ticking = true;
+			}
+		};
 
-  return (
-    <header
-      className={cn(
-        "sticky top-5 z-50",
-        "mx-auto w-full max-w-3xl rounded-lg border shadow",
-        "bg-background/95 supports-[backdrop-filter]:bg-background/80 backdrop-blur-lg",
-      )}
-    >
-      <nav className="mx-auto flex items-center justify-between p-1.5">
-        <div className="hover:bg-accent flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 duration-100">
-          <Grid2x2PlusIcon className="size-5" />
-          <p className="font-mono text-base font-bold">Asme</p>
-        </div>
-        <div className="hidden items-center gap-1 lg:flex">
-          {links.map((link) => (
-            <a className={buttonVariants({ variant: "ghost", size: "sm" })} href={link.href}>
-              {link.label}
-            </a>
-          ))}
-        </div>
-        <div className="flex items-center gap-2">
-          <Button size="sm">Login</Button>
-          <Sheet open={open} onOpenChange={setOpen}>
-            <Button size="icon" variant="outline" onClick={() => setOpen(!open)} className="lg:hidden">
-              <MenuIcon className="size-4" />
-            </Button>
-            <SheetContent
-              className="bg-background/95 supports-[backdrop-filter]:bg-background/80 gap-0 backdrop-blur-lg"
-              showClose={false}
-              side="left"
-            >
-              <div className="grid gap-y-2 overflow-y-auto px-4 pt-12 pb-5">
-                {links.map((link) => (
-                  <a
-                    className={buttonVariants({
-                      variant: "ghost",
-                      className: "justify-start",
-                    })}
-                    href={link.href}
-                  >
-                    {link.label}
-                  </a>
-                ))}
-              </div>
-              <SheetFooter>
-                <Button variant="outline">Sign In</Button>
-                <Button>Get Started</Button>
-              </SheetFooter>
-            </SheetContent>
-          </Sheet>
-        </div>
-      </nav>
-    </header>
-  )
+		window.addEventListener('scroll', handleScroll, { passive: true });
+		return () => window.removeEventListener('scroll', handleScroll);
+	}, []);
+
+	const links = [
+		{
+			label: 'Home',
+			href: '/',
+		},
+		{
+			label: 'About Us',
+			href: '/about',
+		},
+		{
+			label: 'Products',
+			href: '/products',
+		},
+		{
+			label: 'Calculator',
+			href: '/calculator',
+		},
+		{
+			label: 'Gallery',
+			href: '/gallery',
+		},
+		{
+			label: 'Contact',
+			href: '/contact',
+		},
+	];
+
+	return (
+		<header
+			className={cn(
+				'sticky z-50 transition-all duration-500 ease-in-out',
+				isScrolled ? 'top-6' : 'top-0',
+				'w-full border shadow-xl',
+				isScrolled ? 'max-w-3xl mx-auto rounded-3xl' : 'max-w-none rounded-none',
+				isScrolled 
+					? 'bg-white/70 supports-[backdrop-filter]:bg-white/60 backdrop-blur-xl' 
+					: 'bg-white/95 supports-[backdrop-filter]:bg-white/90 backdrop-blur-lg',
+			)}
+			style={{
+				transition: 'all 500ms cubic-bezier(0.4, 0, 0.2, 1)',
+			}}
+		>
+			<nav className={cn(
+				'flex items-center justify-between transition-all duration-500 ease-in-out',
+				isScrolled ? 'p-4 px-6 sm:px-8 max-w-6xl mx-auto' : 'p-5 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto'
+			)}>
+				<div className="hover:bg-accent flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2 duration-300 group">
+					<div className={cn(
+						"bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center group-hover:scale-110 transition-all duration-300",
+						isScrolled ? "w-7 h-7" : "w-8 h-8"
+					)}>
+						<Grid2x2PlusIcon className={cn(
+							"text-white transition-all duration-300",
+							isScrolled ? "size-3" : "size-4"
+						)} />
+					</div>
+					<div className="flex flex-col transition-all duration-300">
+						<p className={cn(
+							"font-bold text-gray-900 transition-all duration-300",
+							isScrolled ? "text-sm" : "text-base"
+						)}>ABUZAR</p>
+						<p className={cn(
+							"text-gray-500 -mt-1 transition-all duration-300",
+							isScrolled ? "text-xs" : "text-xs"
+						)}>INDUSTRIES</p>
+					</div>
+				</div>
+				<div className="hidden items-center gap-1 lg:flex">
+					{links.map((link) => (
+						<a
+							key={link.href}
+							className={cn(
+								buttonVariants({ variant: 'ghost', size: 'sm' }),
+								"transition-all duration-300 hover:scale-105"
+							)}
+							href={link.href}
+						>
+							{link.label}
+						</a>
+					))}
+				</div>
+				<div className="flex items-center gap-2">
+					<Button 
+						asChild
+						size="sm" 
+						className={cn(
+							"bg-gradient-to-r from-accent to-yellow-500 text-gray-900 hover:from-yellow-500 hover:to-accent font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg rounded-full",
+							isScrolled ? "px-4 py-2" : "px-5 py-2.5"
+						)}
+					>
+						<a href="/calculator">Calculator</a>
+					</Button>
+					<Sheet open={open} onOpenChange={setOpen}>
+						<Button
+							size="icon"
+							variant="outline"
+							onClick={() => setOpen(!open)}
+							className="lg:hidden"
+						>
+							<MenuIcon className="size-4" />
+						</Button>
+						<SheetContent
+							className="bg-white/95 supports-[backdrop-filter]:bg-white/80 gap-0 backdrop-blur-lg"
+							showClose={false}
+							side="left"
+						>
+							<div className="grid gap-y-2 overflow-y-auto px-4 pt-12 pb-5">
+								{links.map((link) => (
+									<a
+										key={link.href}
+										className={buttonVariants({
+											variant: 'ghost',
+											className: 'justify-start',
+										})}
+										href={link.href}
+									>
+										{link.label}
+									</a>
+								))}
+							</div>
+							<SheetFooter>
+								<Button variant="outline">Contact Us</Button>
+								<Button asChild className="bg-gradient-to-r from-accent to-yellow-500 text-gray-900 hover:from-yellow-500 hover:to-accent rounded-full">
+									<a href="/calculator">Calculator</a>
+								</Button>
+							</SheetFooter>
+						</SheetContent>
+					</Sheet>
+				</div>
+			</nav>
+		</header>
+	);
 }
-
-demo.tsx
-import { FloatingHeader } from "@/components/ui/floating-header"
-import { cn } from "@/lib/utils"
-
-export default function DemoOne() {
-  return (
-    <div className="relative w-full px-4">
-      <FloatingHeader />
-      <div className="min-h-screen py-10" />
-
-      {/* Dots */}
-      <div
-        aria-hidden="true"
-        className={cn(
-          "absolute inset-0 -z-10 size-full",
-          "bg-[radial-gradient(color-mix(in_oklab,--theme(--color-foreground/.5)30%,transparent)_2px,transparent_2px)]",
-          "bg-[size:12px_12px]",
-        )}
-      />
-    </div>
-  )
-}
-
-\`\`\`
-
-\
-Copy-paste these files
-for dependencies
-:
-\`\`\`tsx
-sshahaider/sheet
-'use client'
-import * as SheetPrimitive from "@radix-ui/react-dialog"
-import { XIcon } from "lucide-react"
-
-import { cn } from "@/lib/utils"
-
-function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
-  return <SheetPrimitive.Root data-slot="sheet" {...props} />
-}
-
-function SheetTrigger({ ...props }: React.ComponentProps<typeof SheetPrimitive.Trigger>) {
-  return <SheetPrimitive.Trigger data-slot="sheet-trigger" {...props} />
-}
-
-function SheetClose({ ...props }: React.ComponentProps<typeof SheetPrimitive.Close>) {
-  return <SheetPrimitive.Close data-slot="sheet-close" {...props} />
-}
-
-function SheetPortal({ ...props }: React.ComponentProps<typeof SheetPrimitive.Portal>) {
-  return <SheetPrimitive.Portal data-slot="sheet-portal" {...props} />
-}
-
-function SheetOverlay({ className, ...props }: React.ComponentProps<typeof SheetPrimitive.Overlay>) {
-  return (
-    <SheetPrimitive.Overlay
-      data-slot="sheet-overlay"
-      className={cn(
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50 backdrop-blur",
-        className,
-      )}
-      {...props}
-    />
-  )
-}
-
-function SheetContent({
-  className,
-  children,
-  side = "right",
-  showClose = true,
-  ...props
-}: React.ComponentProps<typeof SheetPrimitive.Content> & {
-  side?: "top" | "right" | "bottom" | "left"
-  showClose?: boolean
-}) {
-  return (
-    <SheetPortal>
-      <SheetOverlay />
-      <SheetPrimitive.Content
-        data-slot="sheet-content"
-        className={cn(
-          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-4 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
-          side === "right" &&
-            "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm",
-          side === "left" &&
-            "data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm",
-          side === "top" &&
-            "data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0 h-auto border-b",
-          side === "bottom" &&
-            "data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 h-auto border-t",
-          className,
-        )}
-        {...props}
-      >
-        {children}
-        {showClose && (
-          <SheetPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-5 right-5 rounded-full transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none">
-            <XIcon className="size-4" />
-            <span className="sr-only">Close</span>
-          </SheetPrimitive.Close>
-        )}
-      </SheetPrimitive.Content>
-    </SheetPortal>
-  )
-}
-
-function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="sheet-header"
-      className={cn("flex bg-muted/30 border-b flex-col gap-1 p-4", className)}
-      {...props}
-    />
-  )
-}
-
-function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="sheet-footer"
-      className={cn("mt-auto flex flex-col gap-2 p-4 bg-muted/30 border-t", className)}
-      {...props}
-    />
-  )
-}
-
-function SheetTitle({ className, ...props }: React.ComponentProps<typeof SheetPrimitive.Title>) {
-  return (
-    <SheetPrimitive.Title
-      data-slot="sheet-title"
-      className={cn("text-foreground font-semibold", className)}
-      {...props}
-    />
-  )
-}
-
-function SheetDescription({ className, ...props }: React.ComponentProps<typeof SheetPrimitive.Description>) {
-  return (
-    <SheetPrimitive.Description
-      data-slot="sheet-description"
-      className={cn("text-muted-foreground text-sm", className)}
-      {...props}
-    />
-  )
-}
-
-export { Sheet, SheetTrigger, SheetClose, SheetContent, SheetHeader, SheetFooter, SheetTitle, SheetDescription }
-
-\`\`\`
-\`\`\`tsx
-shadcn/button
-import { Slot } from "@radix-ui/react-slot"
-import type { VariantProps } from "class-variance-authority"
-
-import { cn } from "@/lib/utils"
-
-const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
-  {
-    variants: {
-      variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-      },
-      size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  },
-)
-
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  asChild?: boolean
-}
-
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button"
-    return <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
-  },
-)
-Button.displayName = "Button"
-
-export { Button, buttonVariants }
-
-\`\`\`
-\`\`\`tsx
-shadcn/input
-
-import { cn } from "@/lib/utils"
-
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
-
-const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type, ...props }, ref) => {
-  return (
-    <input
-      type={type}
-      className={cn(
-        "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
-        className,
-      )}
-      ref={ref}
-      {...props}
-    />
-  )
-})
-Input.displayName = "Input"
-
-export { Input }
-
-\`\`\`
-\`\`\`tsx
-shadcn/label
-"use client"
-
-import * as React from "react"
-import * as LabelPrimitive from "@radix-ui/react-label"
-import { cva, type VariantProps } from "class-variance-authority"
-
-import { cn } from "@/lib/utils"
-
-const labelVariants = cva("text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70")
-
-const Label = React.forwardRef<
-  React.ElementRef<typeof LabelPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> & VariantProps<typeof labelVariants>
->(({ className, ...props }, ref) => (
-  <LabelPrimitive.Root ref={ref} className={cn(labelVariants(), className)} {...props} />
-))
-Label.displayName = LabelPrimitive.Root.displayName
-
-export { Label }
-
-\`\`\`
-
-Install NPM dependencies:
-\`\`\`bash
-\
-lucide-react,
-@radix
--ui/react-dialog, @radix-ui/react-slot,
-  class-variance-authority, @radix-ui/react-label
-\`\`\`

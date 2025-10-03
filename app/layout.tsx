@@ -5,7 +5,7 @@ import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
 import { Playfair_Display } from "next/font/google"
 import "./globals.css"
-import { SiteHeader } from "@/components/site-header"
+import { FloatingHeader } from "@/components/ui/floating-header"
 import { SiteFooter } from "@/components/site-footer"
 import { Suspense } from "react"
 
@@ -43,7 +43,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`antialiased font-sans ${GeistSans.variable} ${GeistMono.variable} ${playfair.variable}`}>
         <Suspense fallback={null}>
-          <SiteHeader />
+          <FloatingHeader />
           <main>{children}</main>
           <SiteFooter />
           <Analytics />
