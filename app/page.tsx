@@ -33,20 +33,20 @@ export default function Page() {
           <ProductCard
             title="Teak Wood Planks"
             imageQuery="teak%20wood%20planks%20stack"
-            sizes={['2" x 6" x 6’', '2" x 8" x 8’', "Custom sizes"]}
-            price="Contact for Price"
+            sizes={['2" x 6" x 6\'', '2" x 8" x 8\'', "Custom sizes"]}
+            price="₹4000 per cubic feet"
           />
           <ProductCard
             title="White Teak Wood Planks"
             imageQuery="white%20teak%20wood%20planks%20stack"
-            sizes={['1.5" x 6" x 6’', '2" x 6" x 8’', "Custom sizes"]}
-            price="Contact for Price"
+            sizes={['1.5" x 6" x 6\'', '2" x 6" x 8\'', "Custom sizes"]}
+            price="₹2800 per cubic feet"
           />
           <ProductCard
             title="Neem Wood Planks"
             imageQuery="neem%20wood%20planks%20stack"
-            sizes={['1" x 4" x 6’', '2" x 6" x 8’', "Custom sizes"]}
-            price="Contact for Price"
+            sizes={['1" x 4" x 6\'', '2" x 6" x 8\'', "Custom sizes"]}
+            price="₹1500 per cubic feet"
           />
         </div>
 

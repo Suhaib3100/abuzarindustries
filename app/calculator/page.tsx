@@ -21,9 +21,9 @@ interface TimberItem {
 }
 
 const timberTypes = [
-  { name: 'Teak Wood', price: 850, color: 'bg-amber-100 text-amber-800' },
-  { name: 'White Teak', price: 750, color: 'bg-yellow-100 text-yellow-800' },
-  { name: 'Neem Wood', price: 650, color: 'bg-green-100 text-green-800' },
+  { name: 'Teak Wood', price: 4000, color: 'bg-amber-100 text-amber-800' },
+  { name: 'White Teak', price: 2800, color: 'bg-yellow-100 text-yellow-800' },
+  { name: 'Neem Wood', price: 1500, color: 'bg-green-100 text-green-800' },
 ];
 
 export default function CalculatorPage() {
@@ -35,7 +35,7 @@ export default function CalculatorPage() {
       width: 6,
       thickness: 2,
       quantity: 10,
-      pricePerCubicFoot: 850,
+      pricePerCubicFoot: 4000,
       totalPrice: 0,
     }
   ]);
@@ -76,7 +76,7 @@ export default function CalculatorPage() {
       width: 6,
       thickness: 2,
       quantity: 1,
-      pricePerCubicFoot: 850,
+      pricePerCubicFoot: 4000,
       totalPrice: 0,
     };
     newItem.totalPrice = calculateTotal(newItem);
@@ -217,21 +217,22 @@ export default function CalculatorPage() {
             {/* Calculator Table */}
             <Card>
               <CardHeader>
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
                     <CardTitle>Timber Calculation Sheet</CardTitle>
                     <CardDescription>
                       Add your timber requirements and get instant pricing
                     </CardDescription>
                   </div>
-                  <Button onClick={addItem} className="flex items-center gap-2">
+                  <Button onClick={addItem} className="flex items-center gap-2 w-full sm:w-auto">
                     <Plus className="w-4 h-4" />
                     Add Row
                   </Button>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="overflow-x-auto">
+                {/* Desktop Table View */}
+                <div className="hidden lg:block overflow-x-auto">
                   <table className="w-full border-collapse">
                     <thead>
                       <tr className="border-b-2 border-gray-200">
@@ -324,6 +325,97 @@ export default function CalculatorPage() {
                   </table>
                 </div>
 
+                {/* Mobile Card View */}
+                <div className="lg:hidden space-y-4">
+                  {items.map((item, index) => (
+                    <div key={item.id} className="border rounded-lg p-4 bg-white shadow-sm">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex-1 mr-3">
+                          <Label className="text-xs text-gray-600 mb-2 block">Timber Type</Label>
+                          <select
+                            value={item.type}
+                            onChange={(e) => updateItem(item.id, 'type', e.target.value)}
+                            className="w-full p-2 border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                          >
+                            {timberTypes.map((timber) => (
+                              <option key={timber.name} value={timber.name}>
+                                {timber.name} - ₹{timber.price}/cft
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => removeItem(item.id)}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 flex-shrink-0"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-3 mb-4">
+                        <div>
+                          <Label className="text-xs text-gray-600">Length (ft)</Label>
+                          <Input
+                            type="number"
+                            value={item.length}
+                            onChange={(e) => updateItem(item.id, 'length', parseFloat(e.target.value) || 0)}
+                            className="w-full"
+                            min="0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs text-gray-600">Width (in)</Label>
+                          <Input
+                            type="number"
+                            value={item.width}
+                            onChange={(e) => updateItem(item.id, 'width', parseFloat(e.target.value) || 0)}
+                            className="w-full"
+                            min="0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs text-gray-600">Thickness (in)</Label>
+                          <Input
+                            type="number"
+                            value={item.thickness}
+                            onChange={(e) => updateItem(item.id, 'thickness', parseFloat(e.target.value) || 0)}
+                            className="w-full"
+                            min="0"
+                            step="0.1"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs text-gray-600">Quantity</Label>
+                          <Input
+                            type="number"
+                            value={item.quantity}
+                            onChange={(e) => updateItem(item.id, 'quantity', parseInt(e.target.value) || 0)}
+                            className="w-full"
+                            min="1"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div>
+                          <p className="text-sm text-gray-600">Price per cft</p>
+                          <p className="font-mono text-sm">₹{item.pricePerCubicFoot}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm text-gray-600">Total</p>
+                          <p className="font-mono font-semibold text-primary text-lg">
+                            ₹{item.totalPrice.toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
                 {/* Total Section */}
                 <div className="mt-6 p-4 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg border-2 border-primary/20">
                   <div className="flex items-center justify-between">
@@ -362,6 +454,7 @@ export default function CalculatorPage() {
                       value={customerInfo.name}
                       onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
                       placeholder="Enter your full name"
+                      className="w-full"
                     />
                   </div>
                   <div>
@@ -372,6 +465,7 @@ export default function CalculatorPage() {
                       value={customerInfo.email}
                       onChange={(e) => setCustomerInfo({...customerInfo, email: e.target.value})}
                       placeholder="Enter your email"
+                      className="w-full"
                     />
                   </div>
                   <div>
@@ -381,6 +475,7 @@ export default function CalculatorPage() {
                       value={customerInfo.phone}
                       onChange={(e) => setCustomerInfo({...customerInfo, phone: e.target.value})}
                       placeholder="Enter your phone number"
+                      className="w-full"
                     />
                   </div>
                   <div>
@@ -390,6 +485,7 @@ export default function CalculatorPage() {
                       value={customerInfo.project}
                       onChange={(e) => setCustomerInfo({...customerInfo, project: e.target.value})}
                       placeholder="e.g., Residential, Commercial"
+                      className="w-full"
                     />
                   </div>
                 </div>
@@ -400,6 +496,7 @@ export default function CalculatorPage() {
                     value={customerInfo.address}
                     onChange={(e) => setCustomerInfo({...customerInfo, address: e.target.value})}
                     placeholder="Enter complete delivery address"
+                    className="w-full"
                   />
                 </div>
               </CardContent>
