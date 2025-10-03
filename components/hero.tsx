@@ -49,15 +49,25 @@ export function Hero() {
             </Button>
             
             <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="border-2 border-white text-white hover:bg-white hover:text-gray-900 transition-all duration-200 font-semibold px-8 py-4 text-lg rounded-lg backdrop-blur-sm"
-            >
-              <a href="https://wa.me/919845378626" target="_blank" rel="noopener noreferrer">
-                WhatsApp Us
-              </a>
-            </Button>
+  asChild
+  size="lg"
+  variant="outline"
+  className="border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-white transition-all duration-200 font-semibold px-8 py-4 text-lg rounded-lg backdrop-blur-sm relative group"
+>
+  <a
+    href="https://wa.me/919845378626"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="relative"
+  >
+    WhatsApp Us
+    <span className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap pointer-events-none z-50">
+      Chat with us on WhatsApp
+      <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+    </span>
+  </a>
+</Button>
+
             
             <Button 
               asChild 
