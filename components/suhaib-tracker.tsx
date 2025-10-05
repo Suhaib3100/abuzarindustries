@@ -27,6 +27,15 @@ interface TrackingData {
   pagesVisited?: string[]
   totalSessionTime?: number
   isNewSession?: boolean
+  utmParams?: {
+    utm_source?: string
+    utm_medium?: string
+    utm_campaign?: string
+    utm_term?: string
+    utm_content?: string
+    utm_id?: string
+  }
+  customParams?: Record<string, string>
 }
 
 const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1424322163980107788/oAcBxPrySgHMvAIE7zIVhF8vg3QQgQMxIahs6GpWMGWh_WrBg7PXE_zZD5pSMX2RQEBc'
@@ -69,6 +78,8 @@ export function SuhaibTracker() {
     console.log('🧪 Sending immediate test message...')
     setTimeout(async () => {
       try {
+        const { utmParams, customParams } = getUTMParams()
+        
         const testData = {
           timestamp: new Date().toISOString(),
           page: pathname,
@@ -82,7 +93,9 @@ export function SuhaibTracker() {
           visitDuration: 0,
           pagesVisited: [pathname],
           totalSessionTime: 0,
-          isNewSession: true
+          isNewSession: true,
+          utmParams: Object.keys(utmParams || {}).length > 0 ? utmParams : undefined,
+          customParams: Object.keys(customParams || {}).length > 0 ? customParams : undefined
         }
         
         console.log('🧪 Test data prepared:', testData)
@@ -107,7 +120,7 @@ export function SuhaibTracker() {
     // Get location data with multiple sources for better accuracy
     const getLocationData = async (): Promise<TrackingData['location']> => {
       try {
-        console.log('🌍 Starting location detection...')
+            console.log('🌍 Starting location detection...')
         
         // First try browser geolocation API (most accurate)
         const browserLocation = await getBrowserLocation()
@@ -321,11 +334,44 @@ export function SuhaibTracker() {
       return null
     }
 
+    // Get UTM parameters from URL
+    const getUTMParams = () => {
+      if (typeof window === 'undefined') return {}
+      
+      const urlParams = new URLSearchParams(window.location.search)
+      const utmParams: Record<string, string> = {}
+      const customParams: Record<string, string> = {}
+      
+      // Standard UTM parameters
+      const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'utm_id']
+      
+      utmKeys.forEach(key => {
+        const value = urlParams.get(key)
+        if (value) {
+          utmParams[key] = value
+        }
+      })
+      
+      // Custom parameters (any parameter starting with custom_)
+      urlParams.forEach((value, key) => {
+        if (key.startsWith('custom_') || key.startsWith('fbclid') || key.startsWith('gclid')) {
+          customParams[key] = value
+        }
+      })
+      
+      console.log('📊 UTM Parameters:', utmParams)
+      console.log('📊 Custom Parameters:', customParams)
+      
+      return { utmParams, customParams }
+    }
+
     // Get detailed tracking data
     const getTrackingData = async (): Promise<TrackingData> => {
       console.log('📊 Getting tracking data...')
       const location = await getLocationData()
       console.log('📍 Final location data:', location)
+      
+      const { utmParams, customParams } = getUTMParams()
       
       const trackingData = {
         timestamp: new Date().toISOString(),
@@ -341,7 +387,9 @@ export function SuhaibTracker() {
         visitDuration: Date.now() - visitStartTime,
         pagesVisited: pagesVisited,
         totalSessionTime: Date.now() - sessionStartTime.current,
-        isNewSession: isNewSession
+        isNewSession: isNewSession,
+        utmParams: Object.keys(utmParams || {}).length > 0 ? utmParams : undefined,
+        customParams: Object.keys(customParams || {}).length > 0 ? customParams : undefined
       }
       
       console.log('📊 Complete tracking data:', trackingData)
@@ -397,7 +445,17 @@ export function SuhaibTracker() {
               name: "🔗 Traffic Source",
               value: data.referrer === 'Direct' ? '**Direct Visit**' : `**Referrer:** ${data.referrer}`,
               inline: true
-            }
+            },
+            ...(data.utmParams ? [{
+              name: "📈 UTM Campaign",
+              value: `**Source:** ${data.utmParams.utm_source || 'N/A'}\n**Medium:** ${data.utmParams.utm_medium || 'N/A'}\n**Campaign:** ${data.utmParams.utm_campaign || 'N/A'}\n**Term:** ${data.utmParams.utm_term || 'N/A'}\n**Content:** ${data.utmParams.utm_content || 'N/A'}`,
+              inline: false
+            }] : []),
+            ...(data.customParams ? [{
+              name: "🎯 Custom Parameters",
+              value: Object.entries(data.customParams).map(([key, value]) => `**${key}:** ${value}`).join('\n'),
+              inline: false
+            }] : [])
           ],
           footer: {
             text: "Abuzar Industries - Best Teak Wood Supplier in Chitradurga | SUHAIB's Tracker",
@@ -469,6 +527,8 @@ export function SuhaibTracker() {
     const handleBeforeUnload = async () => {
       console.log('🚪 User leaving page, hasLoggedSession:', hasLoggedSession)
       if (hasLoggedSession) {
+        const { utmParams, customParams } = getUTMParams()
+        
         const finalData: TrackingData = {
           timestamp: new Date().toISOString(),
           page: pathname,
@@ -482,7 +542,9 @@ export function SuhaibTracker() {
           visitDuration: Date.now() - visitStartTime,
           pagesVisited: pagesVisited,
           totalSessionTime: Date.now() - sessionStartTime.current,
-          isNewSession: false
+          isNewSession: false,
+          utmParams: Object.keys(utmParams || {}).length > 0 ? utmParams : undefined,
+          customParams: Object.keys(customParams || {}).length > 0 ? customParams : undefined
         }
 
         // Send final tracking data using sendBeacon for reliability
