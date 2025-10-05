@@ -54,10 +54,14 @@ export function SuhaibTracker() {
     // Store session ID
     sessionStorage.setItem('suhaib-session-id', sessionId)
     
-    // Check if this is a new session
+    // Check if this is a new session - simplified logic
     const existingSession = sessionStorage.getItem('suhaib-session-logged')
+    console.log('🔍 Session check:', { existingSession, sessionId })
+    
+    // Always treat as new session for now to ensure we get logs
+    console.log('🆕 Treating as new session for testing')
+    setIsNewSession(true)
     if (!existingSession) {
-      setIsNewSession(true)
       sessionStorage.setItem('suhaib-session-logged', 'true')
     }
 
@@ -240,6 +244,7 @@ export function SuhaibTracker() {
 
     // Send tracking data to Discord
     const sendToDiscord = async (data: TrackingData, isExit = false) => {
+      console.log('📤 Sending to Discord webhook:', DISCORD_WEBHOOK_URL)
       try {
         const embed = {
           title: isExit ? "🚪 SUHAIB's Tracker - Session Complete" : "🔍 SUHAIB's Tracker - New Visitor",
@@ -322,7 +327,7 @@ export function SuhaibTracker() {
           timestamp: data.timestamp
         }
 
-        await fetch(DISCORD_WEBHOOK_URL, {
+        const response = await fetch(DISCORD_WEBHOOK_URL, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -334,18 +339,36 @@ export function SuhaibTracker() {
           })
         })
 
-        console.log(`✅ ${isExit ? 'Exit' : 'Entry'} tracking data sent to Discord successfully`)
+        console.log('📤 Discord response status:', response.status)
+        if (response.ok) {
+          console.log(`✅ ${isExit ? 'Exit' : 'Entry'} tracking data sent to Discord successfully`)
+        } else {
+          console.error('❌ Discord webhook failed:', response.status, response.statusText)
+        }
       } catch (error) {
         console.error(`❌ Failed to send ${isExit ? 'exit' : 'entry'} tracking data to Discord:`, error)
       }
     }
 
-    // Track page visit - only for new sessions
+    // Track page visit - simplified for testing
     const trackVisit = async () => {
-      if (isNewSession && !hasLoggedSession) {
+      console.log('🔍 SUHAIB Tracker Debug:', {
+        isNewSession,
+        hasLoggedSession,
+        pathname,
+        sessionId
+      })
+      
+      // Always send for testing - remove hasLoggedSession check
+      if (isNewSession) {
+        console.log('📊 Sending new session tracking data...')
         const trackingData = await getTrackingData()
+        console.log('📊 Tracking data prepared:', trackingData)
         await sendToDiscord(trackingData, false)
         setHasLoggedSession(true)
+        console.log('✅ Session logged successfully')
+      } else {
+        console.log('⏭️ Skipping log - not a new session')
       }
     }
 
@@ -354,6 +377,7 @@ export function SuhaibTracker() {
 
     // Track when user leaves the page
     const handleBeforeUnload = async () => {
+      console.log('🚪 User leaving page, hasLoggedSession:', hasLoggedSession)
       if (hasLoggedSession) {
         const finalData: TrackingData = {
           timestamp: new Date().toISOString(),
