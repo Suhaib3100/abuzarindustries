@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 
 interface TrackingData {
@@ -19,10 +19,14 @@ interface TrackingData {
     latitude?: number
     longitude?: number
     isp?: string
+    accuracy?: number
   }
   sessionId: string
   visitDuration?: number
   previousPage?: string
+  pagesVisited?: string[]
+  totalSessionTime?: number
+  isNewSession?: boolean
 }
 
 const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1424322163980107788/oAcBxPrySgHMvAIE7zIVhF8vg3QQgQMxIahs6GpWMGWh_WrBg7PXE_zZD5pSMX2RQEBc'
@@ -38,32 +42,178 @@ export function SuhaibTracker() {
   })
   const [visitStartTime] = useState(() => Date.now())
   const [previousPage, setPreviousPage] = useState<string>('')
+  const [pagesVisited, setPagesVisited] = useState<string[]>([])
+  const [hasLoggedSession, setHasLoggedSession] = useState(false)
+  const [isNewSession, setIsNewSession] = useState(false)
+  const sessionStartTime = useRef(Date.now())
+  const pageVisitTimes = useRef<Map<string, number>>(new Map())
 
   useEffect(() => {
     if (typeof window === 'undefined') return
 
     // Store session ID
     sessionStorage.setItem('suhaib-session-id', sessionId)
+    
+    // Check if this is a new session
+    const existingSession = sessionStorage.getItem('suhaib-session-logged')
+    if (!existingSession) {
+      setIsNewSession(true)
+      sessionStorage.setItem('suhaib-session-logged', 'true')
+    }
 
-    // Get location data
+    // Track current page visit
+    pageVisitTimes.current.set(pathname, Date.now())
+    
+    // Add to pages visited if not already there
+    setPagesVisited(prev => {
+      if (!prev.includes(pathname)) {
+        return [...prev, pathname]
+      }
+      return prev
+    })
+
+    // Get location data with multiple sources for better accuracy
     const getLocationData = async (): Promise<TrackingData['location']> => {
       try {
-        // Try to get IP and location from a free service
-        const response = await fetch('https://ipapi.co/json/')
-        const data = await response.json()
-        
-        return {
-          country: data.country_name,
-          region: data.region,
-          city: data.city,
-          latitude: data.latitude,
-          longitude: data.longitude,
-          isp: data.org
+        // First try browser geolocation API (most accurate)
+        const browserLocation = await getBrowserLocation()
+        if (browserLocation) {
+          return browserLocation
         }
+
+        // Fallback to IP-based geolocation with multiple services
+        const ipLocation = await getIPLocation()
+        return ipLocation || undefined
       } catch (error) {
         console.log('Location tracking failed:', error)
         return undefined
       }
+    }
+
+    // Get browser geolocation (most accurate)
+    const getBrowserLocation = (): Promise<TrackingData['location'] | null> => {
+      return new Promise((resolve) => {
+        if (!navigator.geolocation) {
+          resolve(null)
+          return
+        }
+
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            try {
+              const { latitude, longitude } = position.coords
+              
+              // Get address from coordinates using reverse geocoding
+              const response = await fetch(
+                `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+              )
+              const data = await response.json()
+              
+              resolve({
+                country: data.countryName,
+                region: data.principalSubdivision,
+                city: data.city || data.locality,
+                latitude: latitude,
+                longitude: longitude,
+                isp: 'Browser Geolocation',
+                accuracy: position.coords.accuracy
+              })
+            } catch (error) {
+              console.log('Reverse geocoding failed:', error)
+              resolve({
+                country: 'Unknown',
+                region: 'Unknown',
+                city: 'Unknown',
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                isp: 'Browser Geolocation',
+                accuracy: position.coords.accuracy
+              })
+            }
+          },
+          (error) => {
+            console.log('Browser geolocation failed:', error.message)
+            resolve(null)
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 300000 // 5 minutes
+          }
+        )
+      })
+    }
+
+    // Get IP-based location with multiple services
+    const getIPLocation = async (): Promise<TrackingData['location'] | null> => {
+      const services = [
+        'https://ipapi.co/json/',
+        'https://ipinfo.io/json',
+        'https://api.ipgeolocation.io/ipgeo?apiKey=free',
+        'https://ip-api.com/json/'
+      ]
+
+      for (const service of services) {
+        try {
+          const controller = new AbortController()
+          const timeoutId = setTimeout(() => controller.abort(), 5000)
+          
+          const response = await fetch(service, { signal: controller.signal })
+          clearTimeout(timeoutId)
+          const data = await response.json()
+          
+          // Parse different response formats
+          let location: TrackingData['location'] | null = null
+          
+          if (service.includes('ipapi.co')) {
+            location = {
+              country: data.country_name,
+              region: data.region,
+              city: data.city,
+              latitude: data.latitude,
+              longitude: data.longitude,
+              isp: data.org
+            }
+          } else if (service.includes('ipinfo.io')) {
+            const [lat, lon] = data.loc?.split(',') || [null, null]
+            location = {
+              country: data.country,
+              region: data.region,
+              city: data.city,
+              latitude: lat ? parseFloat(lat) : undefined,
+              longitude: lon ? parseFloat(lon) : undefined,
+              isp: data.org
+            }
+          } else if (service.includes('ipgeolocation.io')) {
+            location = {
+              country: data.country_name,
+              region: data.state_prov,
+              city: data.city,
+              latitude: data.latitude,
+              longitude: data.longitude,
+              isp: data.isp
+            }
+          } else if (service.includes('ip-api.com')) {
+            location = {
+              country: data.country,
+              region: data.regionName,
+              city: data.city,
+              latitude: data.lat,
+              longitude: data.lon,
+              isp: data.isp
+            }
+          }
+          
+          if (location && location.latitude && location.longitude) {
+            return location
+          }
+        } catch (error) {
+          console.log(`Location service ${service} failed:`, error)
+          continue
+        }
+      }
+      
+      return null
     }
 
     // Get detailed tracking data
@@ -81,19 +231,22 @@ export function SuhaibTracker() {
         location,
         sessionId,
         previousPage: previousPage || 'First Visit',
-        visitDuration: Date.now() - visitStartTime
+        visitDuration: Date.now() - visitStartTime,
+        pagesVisited: pagesVisited,
+        totalSessionTime: Date.now() - sessionStartTime.current,
+        isNewSession: isNewSession
       }
     }
 
     // Send tracking data to Discord
-    const sendToDiscord = async (data: TrackingData) => {
+    const sendToDiscord = async (data: TrackingData, isExit = false) => {
       try {
         const embed = {
-          title: "🔍 SUHAIB's Tracker - Site Visitor",
-          color: 0x00ff00,
+          title: isExit ? "🚪 SUHAIB's Tracker - Session Complete" : "🔍 SUHAIB's Tracker - New Visitor",
+          color: isExit ? 0xff6b35 : 0x00ff00,
           fields: [
             {
-              name: "📅 Timestamp",
+              name: "📅 Session Start",
               value: new Date(data.timestamp).toLocaleString('en-US', {
                 timeZone: data.timezone,
                 year: 'numeric',
@@ -103,11 +256,6 @@ export function SuhaibTracker() {
                 minute: '2-digit',
                 second: '2-digit'
               }),
-              inline: true
-            },
-            {
-              name: "🌐 Page Visited",
-              value: `\`${data.page}\``,
               inline: true
             },
             {
@@ -125,8 +273,15 @@ export function SuhaibTracker() {
             {
               name: "🌍 Coordinates",
               value: data.location?.latitude && data.location?.longitude
-                ? `[${data.location.latitude.toFixed(4)}, ${data.location.longitude.toFixed(4)}](https://www.google.com/maps?q=${data.location.latitude},${data.location.longitude})`
+                ? `[${data.location.latitude.toFixed(6)}, ${data.location.longitude.toFixed(6)}](https://www.google.com/maps?q=${data.location.latitude},${data.location.longitude})`
                 : 'Not available',
+              inline: true
+            },
+            {
+              name: "🎯 Accuracy",
+              value: data.location?.accuracy 
+                ? `±${Math.round(data.location.accuracy)}m`
+                : 'IP-based (less accurate)',
               inline: true
             },
             {
@@ -135,24 +290,24 @@ export function SuhaibTracker() {
               inline: true
             },
             {
-              name: "💻 Device Info",
-              value: `Screen: ${data.screenResolution}\nLanguage: ${data.language}\nTimezone: ${data.timezone}`,
+              name: "📊 Pages Visited",
+              value: data.pagesVisited?.length ? data.pagesVisited.map(page => `\`${page}\``).join(', ') : `\`${data.page}\``,
               inline: false
             },
             {
-              name: "🔗 Referrer",
+              name: "⏱️ Total Session Time",
+              value: `${Math.round((data.totalSessionTime || 0) / 1000)}s`,
+              inline: true
+            },
+            {
+              name: "🔗 Entry Point",
               value: data.referrer,
               inline: true
             },
             {
-              name: "⏱️ Visit Duration",
-              value: `${Math.round(data.visitDuration! / 1000)}s`,
-              inline: true
-            },
-            {
-              name: "⬅️ Previous Page",
-              value: data.previousPage,
-              inline: true
+              name: "💻 Device Info",
+              value: `Screen: ${data.screenResolution}\nLanguage: ${data.language}\nTimezone: ${data.timezone}`,
+              inline: false
             },
             {
               name: "🖥️ User Agent",
@@ -161,7 +316,7 @@ export function SuhaibTracker() {
             }
           ],
           footer: {
-            text: "SUHAIB's Tracker - Detailed Visitor Analytics",
+            text: isExit ? "SUHAIB's Tracker - Session Analytics" : "SUHAIB's Tracker - New Visitor Analytics",
             icon_url: "https://cdn.discordapp.com/emojis/1234567890123456789.png"
           },
           timestamp: data.timestamp
@@ -173,76 +328,91 @@ export function SuhaibTracker() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            username: "SUHAIB's Tracker",
+            username: isExit ? "SUHAIB's Tracker - Exit" : "SUHAIB's Tracker",
             avatar_url: "https://cdn.discordapp.com/emojis/1234567890123456789.png",
             embeds: [embed]
           })
         })
 
-        console.log('✅ Tracking data sent to Discord successfully')
+        console.log(`✅ ${isExit ? 'Exit' : 'Entry'} tracking data sent to Discord successfully`)
       } catch (error) {
-        console.error('❌ Failed to send tracking data to Discord:', error)
+        console.error(`❌ Failed to send ${isExit ? 'exit' : 'entry'} tracking data to Discord:`, error)
       }
     }
 
-    // Track page visit
+    // Track page visit - only for new sessions
     const trackVisit = async () => {
-      const trackingData = await getTrackingData()
-      await sendToDiscord(trackingData)
+      if (isNewSession && !hasLoggedSession) {
+        const trackingData = await getTrackingData()
+        await sendToDiscord(trackingData, false)
+        setHasLoggedSession(true)
+      }
     }
 
-    // Track immediately on page load
+    // Track immediately on page load if new session
     trackVisit()
 
     // Track when user leaves the page
-    const handleBeforeUnload = () => {
-      const finalData: TrackingData = {
-        timestamp: new Date().toISOString(),
-        page: pathname,
-        userAgent: navigator.userAgent,
-        language: navigator.language,
-        screenResolution: `${screen.width}x${screen.height}`,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        referrer: document.referrer || 'Direct',
-        sessionId,
-        previousPage: previousPage || 'First Visit',
-        visitDuration: Date.now() - visitStartTime
-      }
+    const handleBeforeUnload = async () => {
+      if (hasLoggedSession) {
+        const finalData: TrackingData = {
+          timestamp: new Date().toISOString(),
+          page: pathname,
+          userAgent: navigator.userAgent,
+          language: navigator.language,
+          screenResolution: `${screen.width}x${screen.height}`,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          referrer: document.referrer || 'Direct',
+          sessionId,
+          previousPage: previousPage || 'First Visit',
+          visitDuration: Date.now() - visitStartTime,
+          pagesVisited: pagesVisited,
+          totalSessionTime: Date.now() - sessionStartTime.current,
+          isNewSession: false
+        }
 
-      // Send final tracking data
-      navigator.sendBeacon(DISCORD_WEBHOOK_URL, JSON.stringify({
-        username: "SUHAIB's Tracker - Exit",
-        embeds: [{
-          title: "🚪 SUHAIB's Tracker - User Exit",
-          color: 0xff0000,
+        // Send final tracking data using sendBeacon for reliability
+        const embed = {
+          title: "🚪 SUHAIB's Tracker - Session Complete",
+          color: 0xff6b35,
           fields: [
             {
-              name: "📅 Exit Time",
+              name: "📅 Session End",
               value: new Date(finalData.timestamp).toLocaleString(),
-              inline: true
-            },
-            {
-              name: "🌐 Last Page",
-              value: `\`${finalData.page}\``,
-              inline: true
-            },
-            {
-              name: "⏱️ Total Visit Duration",
-              value: `${Math.round(finalData.visitDuration! / 1000)}s`,
               inline: true
             },
             {
               name: "🆔 Session ID",
               value: `\`${finalData.sessionId}\``,
               inline: true
+            },
+            {
+              name: "📊 Pages Visited",
+              value: finalData.pagesVisited?.length ? finalData.pagesVisited.map(page => `\`${page}\``).join(', ') : `\`${finalData.page}\``,
+              inline: false
+            },
+            {
+              name: "⏱️ Total Session Duration",
+              value: `${Math.round((finalData.totalSessionTime || 0) / 1000)}s`,
+              inline: true
+            },
+            {
+              name: "🌐 Last Page",
+              value: `\`${finalData.page}\``,
+              inline: true
             }
           ],
           footer: {
-            text: "SUHAIB's Tracker - Exit Analytics"
+            text: "SUHAIB's Tracker - Session Complete"
           },
           timestamp: finalData.timestamp
-        }]
-      }))
+        }
+
+        navigator.sendBeacon(DISCORD_WEBHOOK_URL, JSON.stringify({
+          username: "SUHAIB's Tracker - Exit",
+          embeds: [embed]
+        }))
+      }
     }
 
     // Add event listeners
@@ -257,7 +427,7 @@ export function SuhaibTracker() {
       window.removeEventListener('beforeunload', handleBeforeUnload)
       window.removeEventListener('pagehide', handleBeforeUnload)
     }
-  }, [pathname, sessionId, visitStartTime, previousPage])
+  }, [pathname, sessionId, visitStartTime, previousPage, pagesVisited, hasLoggedSession, isNewSession])
 
   // This component doesn't render anything visible
   return null
