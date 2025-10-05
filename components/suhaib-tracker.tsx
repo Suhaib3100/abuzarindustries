@@ -64,6 +64,34 @@ export function SuhaibTracker() {
     if (!existingSession) {
       sessionStorage.setItem('suhaib-session-logged', 'true')
     }
+    
+    // Force send a test message immediately
+    console.log('🧪 Sending immediate test message...')
+    setTimeout(async () => {
+      try {
+        const testData = {
+          timestamp: new Date().toISOString(),
+          page: pathname,
+          userAgent: navigator.userAgent,
+          language: navigator.language,
+          screenResolution: `${screen.width}x${screen.height}`,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          referrer: document.referrer || 'Direct',
+          sessionId: sessionId,
+          previousPage: 'Test',
+          visitDuration: 0,
+          pagesVisited: [pathname],
+          totalSessionTime: 0,
+          isNewSession: true
+        }
+        
+        console.log('🧪 Test data prepared:', testData)
+        await sendToDiscord(testData, false)
+        console.log('🧪 Test message sent!')
+      } catch (error) {
+        console.error('❌ Test message failed:', error)
+      }
+    }, 2000)
 
     // Track current page visit
     pageVisitTimes.current.set(pathname, Date.now())
@@ -349,23 +377,30 @@ export function SuhaibTracker() {
           timestamp: data.timestamp
         }
 
+        const payload = {
+          username: "Abuzar Industries Tracker",
+          avatar_url: "https://abuzarindustries.in/images/main-logo-1.png",
+          embeds: [embed]
+        }
+        
+        console.log('📤 Sending payload to Discord:', JSON.stringify(payload, null, 2))
+        
         const response = await fetch(DISCORD_WEBHOOK_URL, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            username: "Abuzar Industries Tracker",
-            avatar_url: "https://abuzarindustries.in/images/main-logo-1.png",
-            embeds: [embed]
-          })
+          body: JSON.stringify(payload)
         })
 
         console.log('📤 Discord response status:', response.status)
+        console.log('📤 Discord response headers:', Object.fromEntries(response.headers.entries()))
+        
         if (response.ok) {
           console.log(`✅ ${isExit ? 'Exit' : 'Entry'} tracking data sent to Discord successfully`)
         } else {
-          console.error('❌ Discord webhook failed:', response.status, response.statusText)
+          const errorText = await response.text()
+          console.error('❌ Discord webhook failed:', response.status, response.statusText, errorText)
         }
       } catch (error) {
         console.error(`❌ Failed to send ${isExit ? 'exit' : 'entry'} tracking data to Discord:`, error)
@@ -384,11 +419,15 @@ export function SuhaibTracker() {
       // Always send for testing - remove hasLoggedSession check
       if (isNewSession) {
         console.log('📊 Sending new session tracking data...')
-        const trackingData = await getTrackingData()
-        console.log('📊 Tracking data prepared:', trackingData)
-        await sendToDiscord(trackingData, false)
-        setHasLoggedSession(true)
-        console.log('✅ Session logged successfully')
+        try {
+          const trackingData = await getTrackingData()
+          console.log('📊 Tracking data prepared:', trackingData)
+          await sendToDiscord(trackingData, false)
+          setHasLoggedSession(true)
+          console.log('✅ Session logged successfully')
+        } catch (error) {
+          console.error('❌ Error in trackVisit:', error)
+        }
       } else {
         console.log('⏭️ Skipping log - not a new session')
       }
