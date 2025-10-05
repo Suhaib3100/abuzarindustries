@@ -1,5 +1,6 @@
 'use client';
 
+import type { Metadata } from "next"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,32 @@ import {
   CheckCircle
 } from 'lucide-react';
 
+export const metadata: Metadata = {
+  title: "About Abuzar Industries | Best Teak Wood Supplier Chitradurga Since 1995",
+  description: "Learn about Abuzar Industries, the leading teak wood and timber supplier in Chitradurga since 1995. Founded by Athaulla Afroz, now led by Mohammed Afsar. KSSIDC Industrial Area, DVG Road.",
+  keywords: [
+    "about abuzar industries",
+    "teak wood supplier chitradurga history",
+    "timber merchant chitradurga",
+    "abuzar industries founder",
+    "athaulla afroz",
+    "mohammed afsar",
+    "wood industries chitradurga",
+    "timber company chitradurga",
+    "kssidc industrial area",
+    "dvg road chitradurga"
+  ],
+  openGraph: {
+    title: "About Abuzar Industries | Best Teak Wood Supplier Chitradurga",
+    description: "Leading teak wood supplier in Chitradurga since 1995. Founded by Athaulla Afroz, now led by Mohammed Afsar.",
+    url: "https://abuzarindustries.in/about",
+    type: "website",
+  },
+  alternates: {
+    canonical: "https://abuzarindustries.in/about",
+  },
+}
+
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -32,7 +59,9 @@ export default function AboutPage() {
               About <span className="text-primary">Abuzar Industries</span>
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Three decades of excellence in timber supply, from humble beginnings to industry leadership
+              Three decades of excellence in timber supply, from humble beginnings to industry leadership. 
+              We are the <a href="/products" className="text-primary hover:underline font-medium">best teak wood supplier in Chitradurga</a> with 
+              <a href="/contact" className="text-primary hover:underline font-medium"> reliable delivery across Karnataka</a>.
             </p>
           </div>
 
@@ -54,7 +83,8 @@ export default function AboutPage() {
                 <p className="text-gray-600 mb-6 leading-relaxed">
                   Founded Abuzar Industries in 1995 after facing numerous struggles and challenges. 
                   With determination and vision, he built the company from ground up, establishing 
-                  a reputation for quality timber supply in the construction industry.
+                  a reputation for quality timber supply in the construction industry. Today we are the 
+                  <a href="/products" className="text-primary hover:underline font-medium"> leading timber supplier in Chitradurga</a>.
                 </p>
                 <div className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-full text-sm font-medium">
                   <Calendar className="w-4 h-4 mr-2" />
@@ -91,7 +121,8 @@ export default function AboutPage() {
                 <p className="text-gray-600 mb-6 leading-relaxed">
                   Son of Athaulla Afroz, now leading Abuzar Industries with modern approaches and 
                   continued excellence. Under his leadership, the company has expanded its reach 
-                  and maintained the highest standards of timber quality and customer service.
+                  and maintained the highest standards of timber quality and customer service. 
+                  <a href="/calculator" className="text-primary hover:underline font-medium"> Get instant quotes</a> for our premium timber products.
                 </p>
                 <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary to-accent text-white rounded-full text-sm font-medium">
                   <Target className="w-4 h-4 mr-2" />
@@ -173,6 +204,9 @@ export default function AboutPage() {
             </Button>
             <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary">
               <a href="/contact">Contact Us</a>
+            </Button>
+            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary">
+              <a href="/products">View Products</a>
             </Button>
         </div>
         </div>
