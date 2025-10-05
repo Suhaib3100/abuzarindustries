@@ -1,10 +1,11 @@
 'use client';
 
 import React from 'react';
-import { Grid2x2PlusIcon, MenuIcon } from 'lucide-react';
+import { MenuIcon } from 'lucide-react';
 import { Sheet, SheetContent, SheetFooter } from '@/components/ui/sheet';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 export function FloatingHeader() {
 	const [open, setOpen] = React.useState(false);
@@ -71,13 +72,15 @@ export function FloatingHeader() {
 			)}>
 				<a href="/" className="hover:bg-accent flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2 duration-300 group">
 					<div className={cn(
-						"bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center group-hover:scale-110 transition-all duration-300",
-						isScrolled ? "w-7 h-7" : "w-8 h-8"
+						"relative overflow-hidden rounded-lg group-hover:scale-110 transition-all duration-300",
+						isScrolled ? "w-9 h-9" : "w-12 h-12"
 					)}>
-						<Grid2x2PlusIcon className={cn(
-							"text-white transition-all duration-300",
-							isScrolled ? "size-3" : "size-4"
-						)} />
+						<Image
+							src="/images/main-logo-1.png"
+							alt="Abuzar Industries Logo"
+							fill
+							className="object-contain"
+						/>
 					</div>
 					<div className="flex flex-col transition-all duration-300">
 						<p className={cn(

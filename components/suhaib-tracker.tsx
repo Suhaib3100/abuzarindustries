@@ -94,7 +94,7 @@ export function SuhaibTracker() {
       }
     }
 
-    // Get browser geolocation (most accurate)
+    // Get browser geolocation (most accurate) - with user interaction
     const getBrowserLocation = (): Promise<TrackingData['location'] | null> => {
       return new Promise((resolve) => {
         if (!navigator.geolocation) {
@@ -102,58 +102,106 @@ export function SuhaibTracker() {
           return
         }
 
-        navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            try {
-              const { latitude, longitude } = position.coords
-              
-              // Get address from coordinates using reverse geocoding
-              const response = await fetch(
-                `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
-              )
-              const data = await response.json()
-              
-              resolve({
-                country: data.countryName,
-                region: data.principalSubdivision,
-                city: data.city || data.locality,
-                latitude: latitude,
-                longitude: longitude,
-                isp: 'Browser Geolocation',
-                accuracy: position.coords.accuracy
-              })
-            } catch (error) {
-              console.log('Reverse geocoding failed:', error)
-              resolve({
-                country: 'Unknown',
-                region: 'Unknown',
-                city: 'Unknown',
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                isp: 'Browser Geolocation',
-                accuracy: position.coords.accuracy
-              })
+        // Only request geolocation after user interaction or delay
+        const requestLocation = () => {
+          navigator.geolocation.getCurrentPosition(
+            async (position) => {
+              try {
+                const { latitude, longitude } = position.coords
+                
+                // Get address from coordinates using reverse geocoding
+                const response = await fetch(
+                  `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+                )
+                const data = await response.json()
+                
+                resolve({
+                  country: data.countryName,
+                  region: data.principalSubdivision,
+                  city: data.city || data.locality,
+                  latitude: latitude,
+                  longitude: longitude,
+                  isp: 'Browser Geolocation',
+                  accuracy: position.coords.accuracy
+                })
+              } catch (error) {
+                console.log('Reverse geocoding failed:', error)
+                resolve({
+                  country: 'Unknown',
+                  region: 'Unknown',
+                  city: 'Unknown',
+                  latitude: position.coords.latitude,
+                  longitude: position.coords.longitude,
+                  isp: 'Browser Geolocation',
+                  accuracy: position.coords.accuracy
+                })
+              }
+            },
+            (error) => {
+              console.log('Browser geolocation failed:', error.message)
+              resolve(null)
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 10000,
+              maximumAge: 300000 // 5 minutes
             }
-          },
-          (error) => {
-            console.log('Browser geolocation failed:', error.message)
-            resolve(null)
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 300000 // 5 minutes
+          )
+        }
+
+        // Check if permission was already requested in this session
+        const permissionKey = 'suhaib-geo-permission-requested'
+        const hasRequestedPermission = sessionStorage.getItem(permissionKey)
+        
+        if (hasRequestedPermission) {
+          // Permission already requested in this session, skip
+          console.log('🔒 Geolocation permission already requested in this session')
+          resolve(null)
+          return
+        }
+
+        // Mark permission as requested
+        sessionStorage.setItem(permissionKey, 'true')
+
+        // Wait for user interaction or 3 seconds delay
+        let hasUserInteracted = false
+        
+        const handleUserInteraction = () => {
+          if (!hasUserInteracted) {
+            hasUserInteracted = true
+            requestLocation()
+            // Remove event listeners after first interaction
+            document.removeEventListener('click', handleUserInteraction)
+            document.removeEventListener('scroll', handleUserInteraction)
+            document.removeEventListener('keydown', handleUserInteraction)
           }
-        )
+        }
+
+        // Add event listeners for user interaction
+        document.addEventListener('click', handleUserInteraction, { once: true })
+        document.addEventListener('scroll', handleUserInteraction, { once: true })
+        document.addEventListener('keydown', handleUserInteraction, { once: true })
+
+        // Fallback: request after 3 seconds if no interaction
+        setTimeout(() => {
+          if (!hasUserInteracted) {
+            hasUserInteracted = true
+            requestLocation()
+            // Remove event listeners
+            document.removeEventListener('click', handleUserInteraction)
+            document.removeEventListener('scroll', handleUserInteraction)
+            document.removeEventListener('keydown', handleUserInteraction)
+          }
+        }, 3000)
       })
     }
 
     // Get IP-based location with multiple services
     const getIPLocation = async (): Promise<TrackingData['location'] | null> => {
       const services = [
+        'https://api.ipgeolocation.io/ipgeo?apiKey=7852cb59def9470cbabcc424b9df1f5e',
         'https://ipapi.co/json/',
         'https://ipinfo.io/json',
-        'https://api.ipgeolocation.io/ipgeo?apiKey=free',
         'https://ip-api.com/json/'
       ]
 
@@ -195,7 +243,8 @@ export function SuhaibTracker() {
               city: data.city,
               latitude: data.latitude,
               longitude: data.longitude,
-              isp: data.isp
+              isp: data.isp,
+              accuracy: data.accuracy_radius ? data.accuracy_radius * 1000 : undefined // Convert km to meters
             }
           } else if (service.includes('ip-api.com')) {
             location = {
@@ -247,82 +296,55 @@ export function SuhaibTracker() {
       console.log('📤 Sending to Discord webhook:', DISCORD_WEBHOOK_URL)
       try {
         const embed = {
-          title: isExit ? "🚪 SUHAIB's Tracker - Session Complete" : "🔍 SUHAIB's Tracker - New Visitor",
-          color: isExit ? 0xff6b35 : 0x00ff00,
+          title: isExit ? "🏁 Session Complete - Abuzar Industries" : "🎯 New Visitor - Abuzar Industries",
+          description: isExit 
+            ? `**Session ended** for visitor from **${data.location?.city || 'Unknown'}, ${data.location?.country || 'Unknown'}**\n*Total time: ${Math.round((data.totalSessionTime || 0) / 1000)}s | Pages: ${data.pagesVisited?.length || 1}*`
+            : `**New visitor** from **${data.location?.city || 'Unknown'}, ${data.location?.country || 'Unknown'}**\n*Looking for timber products in Chitradurga*`,
+          color: isExit ? 0x8B4513 : 0x228B22, // Brown for exit, Forest green for entry
+          thumbnail: {
+            url: "https://abuzarindustries.in/images/main-logo-1.png"
+          },
           fields: [
             {
-              name: "📅 Session Start",
-              value: new Date(data.timestamp).toLocaleString('en-US', {
-                timeZone: data.timezone,
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-              }),
-              inline: true
-            },
-            {
-              name: "🆔 Session ID",
-              value: `\`${data.sessionId}\``,
-              inline: true
-            },
-            {
-              name: "📍 Location",
+              name: "📍 Location Details",
               value: data.location 
-                ? `${data.location.city || 'Unknown'}, ${data.location.region || 'Unknown'}, ${data.location.country || 'Unknown'}`
+                ? `**${data.location.city || 'Unknown'}, ${data.location.region || 'Unknown'}**\n${data.location.country || 'Unknown'}\n[${data.location.latitude?.toFixed(4)}, ${data.location.longitude?.toFixed(4)}](https://www.google.com/maps?q=${data.location.latitude},${data.location.longitude})`
                 : 'Location unavailable',
               inline: true
             },
             {
-              name: "🌍 Coordinates",
-              value: data.location?.latitude && data.location?.longitude
-                ? `[${data.location.latitude.toFixed(6)}, ${data.location.longitude.toFixed(6)}](https://www.google.com/maps?q=${data.location.latitude},${data.location.longitude})`
-                : 'Not available',
-              inline: true
-            },
-            {
-              name: "🎯 Accuracy",
+              name: "🎯 Accuracy & ISP",
               value: data.location?.accuracy 
-                ? `±${Math.round(data.location.accuracy)}m`
-                : 'IP-based (less accurate)',
+                ? `**Accuracy:** ±${Math.round(data.location.accuracy)}m\n**ISP:** ${data.location.isp || 'Unknown'}`
+                : `**Enhanced IP Location**\n**ISP:** ${data.location?.isp || 'Unknown'}`,
               inline: true
             },
             {
-              name: "🏢 ISP",
-              value: data.location?.isp || 'Unknown',
+              name: "📊 Session Info",
+              value: `**ID:** \`${data.sessionId.substring(0, 8)}...\`\n**Time:** ${new Date(data.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}\n**Duration:** ${isExit ? `${Math.round((data.totalSessionTime || 0) / 1000)}s` : 'Active'}`,
               inline: true
             },
             {
-              name: "📊 Pages Visited",
-              value: data.pagesVisited?.length ? data.pagesVisited.map(page => `\`${page}\``).join(', ') : `\`${data.page}\``,
+              name: "🌐 Pages Visited",
+              value: data.pagesVisited?.length 
+                ? data.pagesVisited.map(page => `• \`${page}\``).join('\n')
+                : `• \`${data.page}\``,
               inline: false
             },
             {
-              name: "⏱️ Total Session Time",
-              value: `${Math.round((data.totalSessionTime || 0) / 1000)}s`,
+              name: "💻 Device & Browser",
+              value: `**Screen:** ${data.screenResolution}\n**Language:** ${data.language}\n**Timezone:** ${data.timezone}`,
               inline: true
             },
             {
-              name: "🔗 Entry Point",
-              value: data.referrer,
+              name: "🔗 Traffic Source",
+              value: data.referrer === 'Direct' ? '**Direct Visit**' : `**Referrer:** ${data.referrer}`,
               inline: true
-            },
-            {
-              name: "💻 Device Info",
-              value: `Screen: ${data.screenResolution}\nLanguage: ${data.language}\nTimezone: ${data.timezone}`,
-              inline: false
-            },
-            {
-              name: "🖥️ User Agent",
-              value: `\`\`\`${data.userAgent.substring(0, 1000)}\`\`\``,
-              inline: false
             }
           ],
           footer: {
-            text: isExit ? "SUHAIB's Tracker - Session Analytics" : "SUHAIB's Tracker - New Visitor Analytics",
-            icon_url: "https://cdn.discordapp.com/emojis/1234567890123456789.png"
+            text: "Abuzar Industries - Best Teak Wood Supplier in Chitradurga | SUHAIB's Tracker",
+            icon_url: "https://abuzarindustries.in/images/main-logo-1.png"
           },
           timestamp: data.timestamp
         }
@@ -333,8 +355,8 @@ export function SuhaibTracker() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            username: isExit ? "SUHAIB's Tracker - Exit" : "SUHAIB's Tracker",
-            avatar_url: "https://cdn.discordapp.com/emojis/1234567890123456789.png",
+            username: "Abuzar Industries Tracker",
+            avatar_url: "https://abuzarindustries.in/images/main-logo-1.png",
             embeds: [embed]
           })
         })
@@ -397,43 +419,43 @@ export function SuhaibTracker() {
 
         // Send final tracking data using sendBeacon for reliability
         const embed = {
-          title: "🚪 SUHAIB's Tracker - Session Complete",
-          color: 0xff6b35,
+          title: "🏁 Session Complete - Abuzar Industries",
+          description: `**Session ended** for visitor from **${finalData.location?.city || 'Unknown'}, ${finalData.location?.country || 'Unknown'}**\n*Total time: ${Math.round((finalData.totalSessionTime || 0) / 1000)}s | Pages: ${finalData.pagesVisited?.length || 1}*`,
+          color: 0x8B4513, // Brown color for exit
+          thumbnail: {
+            url: "https://abuzarindustries.in/images/main-logo-1.png"
+          },
           fields: [
             {
-              name: "📅 Session End",
-              value: new Date(finalData.timestamp).toLocaleString(),
+              name: "📍 Location",
+              value: finalData.location 
+                ? `**${finalData.location.city || 'Unknown'}, ${finalData.location.region || 'Unknown'}**\n${finalData.location.country || 'Unknown'}`
+                : 'Location unavailable',
               inline: true
             },
             {
-              name: "🆔 Session ID",
-              value: `\`${finalData.sessionId}\``,
+              name: "📊 Session Summary",
+              value: `**ID:** \`${finalData.sessionId.substring(0, 8)}...\`\n**Duration:** ${Math.round((finalData.totalSessionTime || 0) / 1000)}s\n**Last Page:** \`${finalData.page}\``,
               inline: true
             },
             {
-              name: "📊 Pages Visited",
-              value: finalData.pagesVisited?.length ? finalData.pagesVisited.map(page => `\`${page}\``).join(', ') : `\`${finalData.page}\``,
+              name: "🌐 Pages Visited",
+              value: finalData.pagesVisited?.length 
+                ? finalData.pagesVisited.map(page => `• \`${page}\``).join('\n')
+                : `• \`${finalData.page}\``,
               inline: false
-            },
-            {
-              name: "⏱️ Total Session Duration",
-              value: `${Math.round((finalData.totalSessionTime || 0) / 1000)}s`,
-              inline: true
-            },
-            {
-              name: "🌐 Last Page",
-              value: `\`${finalData.page}\``,
-              inline: true
             }
           ],
           footer: {
-            text: "SUHAIB's Tracker - Session Complete"
+            text: "Abuzar Industries - Best Teak Wood Supplier in Chitradurga | SUHAIB's Tracker",
+            icon_url: "https://abuzarindustries.in/images/main-logo-1.png"
           },
           timestamp: finalData.timestamp
         }
 
         navigator.sendBeacon(DISCORD_WEBHOOK_URL, JSON.stringify({
-          username: "SUHAIB's Tracker - Exit",
+          username: "Abuzar Industries Tracker",
+          avatar_url: "https://abuzarindustries.in/images/main-logo-1.png",
           embeds: [embed]
         }))
       }
