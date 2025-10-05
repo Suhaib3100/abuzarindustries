@@ -107,17 +107,27 @@ export function SuhaibTracker() {
     // Get location data with multiple sources for better accuracy
     const getLocationData = async (): Promise<TrackingData['location']> => {
       try {
+        console.log('🌍 Starting location detection...')
+        
         // First try browser geolocation API (most accurate)
         const browserLocation = await getBrowserLocation()
         if (browserLocation) {
+          console.log('✅ Browser geolocation successful:', browserLocation)
           return browserLocation
         }
 
         // Fallback to IP-based geolocation with multiple services
+        console.log('🔄 Trying IP-based geolocation...')
         const ipLocation = await getIPLocation()
-        return ipLocation || undefined
+        if (ipLocation) {
+          console.log('✅ IP geolocation successful:', ipLocation)
+          return ipLocation
+        }
+        
+        console.log('❌ All location methods failed')
+        return undefined
       } catch (error) {
-        console.log('Location tracking failed:', error)
+        console.log('❌ Location tracking failed:', error)
         return undefined
       }
     }
@@ -235,12 +245,22 @@ export function SuhaibTracker() {
 
       for (const service of services) {
         try {
+          console.log(`🌐 Trying service: ${service}`)
           const controller = new AbortController()
           const timeoutId = setTimeout(() => controller.abort(), 5000)
           
           const response = await fetch(service, { signal: controller.signal })
           clearTimeout(timeoutId)
+          
+          console.log(`📡 Response status: ${response.status}`)
+          
+          if (!response.ok) {
+            console.log(`❌ Service failed with status: ${response.status}`)
+            continue
+          }
+          
           const data = await response.json()
+          console.log(`📊 Service response:`, data)
           
           // Parse different response formats
           let location: TrackingData['location'] | null = null
@@ -286,22 +306,28 @@ export function SuhaibTracker() {
           }
           
           if (location && location.latitude && location.longitude) {
+            console.log(`✅ Location found from ${service}:`, location)
             return location
+          } else {
+            console.log(`❌ Invalid location data from ${service}:`, location)
           }
         } catch (error) {
-          console.log(`Location service ${service} failed:`, error)
+          console.log(`❌ Location service ${service} failed:`, error)
           continue
         }
       }
       
+      console.log('❌ All IP geolocation services failed')
       return null
     }
 
     // Get detailed tracking data
     const getTrackingData = async (): Promise<TrackingData> => {
+      console.log('📊 Getting tracking data...')
       const location = await getLocationData()
+      console.log('📍 Final location data:', location)
       
-      return {
+      const trackingData = {
         timestamp: new Date().toISOString(),
         page: pathname,
         userAgent: navigator.userAgent,
@@ -317,6 +343,9 @@ export function SuhaibTracker() {
         totalSessionTime: Date.now() - sessionStartTime.current,
         isNewSession: isNewSession
       }
+      
+      console.log('📊 Complete tracking data:', trackingData)
+      return trackingData
     }
 
     // Send tracking data to Discord
