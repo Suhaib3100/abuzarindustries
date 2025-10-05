@@ -8,6 +8,7 @@ import "./globals.css"
 import { FloatingHeader } from "@/components/ui/floating-header"
 import { SiteFooter } from "@/components/site-footer"
 import { VideoPopup } from "@/components/video-popup"
+import { SuhaibTracker } from "@/components/suhaib-tracker"
 import { Suspense } from "react"
 
 const playfair = Playfair_Display({
@@ -44,6 +45,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`antialiased font-sans ${GeistSans.variable} ${GeistMono.variable} ${playfair.variable}`}>
         <Suspense fallback={null}>
+          <SuhaibTracker />
           <FloatingHeader />
           <main>{children}</main>
           <SiteFooter />
