@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { ProductCard } from "@/components/product-card"
+import { TeakWoodSchema, WhiteTeakWoodSchema, NeemWoodSchema } from "@/components/product-schema"
 
 export const metadata: Metadata = {
   title: "Best Teak Wood Products Chitradurga | Premium Timber | Abuzar Industries",
@@ -31,7 +32,11 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <section className="mx-auto max-w-6xl px-4 py-10 md:py-16">
+    <>
+      <TeakWoodSchema />
+      <WhiteTeakWoodSchema />
+      <NeemWoodSchema />
+      <section className="mx-auto max-w-6xl px-4 py-10 md:py-16">
       <h1 className="font-serif text-3xl font-semibold md:text-4xl">Best Teak Wood Products in Chitradurga</h1>
       <p className="mt-3 max-w-2xl text-foreground/80">Explore our premium timber categories - best teak wood, white teak, and neem wood planks. Custom sizes available. Message us for current pricing.</p>
 
@@ -74,6 +79,7 @@ export default function Page() {
           </div>
         </div>
       </div>
-    </section>
+      </section>
+    </>
   )
 }

@@ -74,37 +74,7 @@ export function SuhaibTracker() {
       sessionStorage.setItem('suhaib-session-logged', 'true')
     }
     
-    // Force send a test message immediately
-    console.log('🧪 Sending immediate test message...')
-    setTimeout(async () => {
-      try {
-        const { utmParams, customParams } = getUTMParams()
-        
-        const testData = {
-          timestamp: new Date().toISOString(),
-          page: pathname,
-          userAgent: navigator.userAgent,
-          language: navigator.language,
-          screenResolution: `${screen.width}x${screen.height}`,
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          referrer: document.referrer || 'Direct',
-          sessionId: sessionId,
-          previousPage: 'Test',
-          visitDuration: 0,
-          pagesVisited: [pathname],
-          totalSessionTime: 0,
-          isNewSession: true,
-          utmParams: Object.keys(utmParams || {}).length > 0 ? utmParams : undefined,
-          customParams: Object.keys(customParams || {}).length > 0 ? customParams : undefined
-        }
-        
-        console.log('🧪 Test data prepared:', testData)
-        await sendToDiscord(testData, false)
-        console.log('🧪 Test message sent!')
-      } catch (error) {
-        console.error('❌ Test message failed:', error)
-      }
-    }, 2000)
+    // Remove test message - no longer needed
 
     // Track current page visit
     pageVisitTimes.current.set(pathname, Date.now())
@@ -260,15 +230,24 @@ export function SuhaibTracker() {
         try {
           console.log(`🌐 Trying service: ${service}`)
           const controller = new AbortController()
-          const timeoutId = setTimeout(() => controller.abort(), 5000)
+          const timeoutId = setTimeout(() => controller.abort(), 10000) // Increased timeout
           
-          const response = await fetch(service, { signal: controller.signal })
+          const response = await fetch(service, { 
+            signal: controller.signal,
+            headers: {
+              'Accept': 'application/json',
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            }
+          })
           clearTimeout(timeoutId)
           
           console.log(`📡 Response status: ${response.status}`)
+          console.log(`📡 Response headers:`, Object.fromEntries(response.headers.entries()))
           
           if (!response.ok) {
             console.log(`❌ Service failed with status: ${response.status}`)
+            const errorText = await response.text()
+            console.log(`❌ Error response:`, errorText)
             continue
           }
           
@@ -279,15 +258,17 @@ export function SuhaibTracker() {
           let location: TrackingData['location'] | null = null
           
           if (service.includes('ipapi.co')) {
+            console.log(`🔍 Parsing ipapi.co response...`)
             location = {
-              country: data.country_name,
-              region: data.region,
+              country: data.country_name || data.country,
+              region: data.region || data.region_code,
               city: data.city,
               latitude: data.latitude,
               longitude: data.longitude,
-              isp: data.org
+              isp: data.org || data.isp
             }
           } else if (service.includes('ipinfo.io')) {
+            console.log(`🔍 Parsing ipinfo.io response...`)
             const [lat, lon] = data.loc?.split(',') || [null, null]
             location = {
               country: data.country,
@@ -298,9 +279,10 @@ export function SuhaibTracker() {
               isp: data.org
             }
           } else if (service.includes('ipgeolocation.io')) {
+            console.log(`🔍 Parsing ipgeolocation.io response...`)
             location = {
-              country: data.country_name,
-              region: data.state_prov,
+              country: data.country_name || data.country,
+              region: data.state_prov || data.region,
               city: data.city,
               latitude: data.latitude,
               longitude: data.longitude,
@@ -308,6 +290,7 @@ export function SuhaibTracker() {
               accuracy: data.accuracy_radius ? data.accuracy_radius * 1000 : undefined // Convert km to meters
             }
           } else if (service.includes('ip-api.com')) {
+            console.log(`🔍 Parsing ip-api.com response...`)
             location = {
               country: data.country,
               region: data.regionName,
@@ -318,7 +301,9 @@ export function SuhaibTracker() {
             }
           }
           
-          if (location && location.latitude && location.longitude) {
+          console.log(`🔍 Parsed location:`, location)
+          
+          if (location && (location.latitude || location.country)) {
             console.log(`✅ Location found from ${service}:`, location)
             return location
           } else {
@@ -326,6 +311,9 @@ export function SuhaibTracker() {
           }
         } catch (error) {
           console.log(`❌ Location service ${service} failed:`, error)
+          if (error instanceof Error) {
+            console.log(`❌ Error details:`, error.message, error.stack)
+          }
           continue
         }
       }
@@ -336,7 +324,7 @@ export function SuhaibTracker() {
 
     // Get UTM parameters from URL
     const getUTMParams = () => {
-      if (typeof window === 'undefined') return {}
+      if (typeof window === 'undefined') return { utmParams: {}, customParams: {} }
       
       const urlParams = new URLSearchParams(window.location.search)
       const utmParams: Record<string, string> = {}
@@ -503,14 +491,14 @@ export function SuhaibTracker() {
         sessionId
       })
       
-      // Always send for testing - remove hasLoggedSession check
-      if (isNewSession) {
+      // Only send if it's a new session AND we haven't logged this session yet
+      if (isNewSession && !hasLoggedSession) {
         console.log('📊 Sending new session tracking data...')
         try {
           const trackingData = await getTrackingData()
           console.log('📊 Tracking data prepared:', trackingData)
           await sendToDiscord(trackingData, false)
-          setHasLoggedSession(true)
+          setHasLoggedSession(true) // Mark this session as logged
           console.log('✅ Session logged successfully')
         } catch (error) {
           console.error('❌ Error in trackVisit:', error)

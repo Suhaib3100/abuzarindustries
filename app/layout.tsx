@@ -144,7 +144,37 @@ export default function RootLayout({
                     "itemOffered": {
                       "@type": "Product",
                       "name": "Teak Wood Planks",
-                      "description": "Premium teak wood planks in custom sizes"
+                      "description": "Premium teak wood planks in custom sizes",
+                      "image": "https://abuzarindustries.in/images/1.jpg",
+                      "category": "Timber",
+                      "brand": {
+                        "@type": "Brand",
+                        "name": "Abuzar Industries"
+                      },
+                      "offers": {
+                        "@type": "Offer",
+                        "price": "4000",
+                        "priceCurrency": "INR",
+                        "priceSpecification": {
+                          "@type": "PriceSpecification",
+                          "price": "4000",
+                          "priceCurrency": "INR",
+                          "unitText": "per cubic foot"
+                        },
+                        "availability": "https://schema.org/InStock",
+                        "seller": {
+                          "@type": "Organization",
+                          "name": "Abuzar Industries"
+                        },
+                        "validFrom": "2024-01-01"
+                      }
+                    },
+                    "price": "4000",
+                    "priceCurrency": "INR",
+                    "availability": "https://schema.org/InStock",
+                    "seller": {
+                      "@type": "Organization",
+                      "name": "Abuzar Industries"
                     }
                   },
                   {
@@ -152,7 +182,37 @@ export default function RootLayout({
                     "itemOffered": {
                       "@type": "Product",
                       "name": "White Teak Wood Planks",
-                      "description": "High-quality white teak wood planks"
+                      "description": "High-quality white teak wood planks",
+                      "image": "https://abuzarindustries.in/images/2.jpg",
+                      "category": "Timber",
+                      "brand": {
+                        "@type": "Brand",
+                        "name": "Abuzar Industries"
+                      },
+                      "offers": {
+                        "@type": "Offer",
+                        "price": "2800",
+                        "priceCurrency": "INR",
+                        "priceSpecification": {
+                          "@type": "PriceSpecification",
+                          "price": "2800",
+                          "priceCurrency": "INR",
+                          "unitText": "per cubic foot"
+                        },
+                        "availability": "https://schema.org/InStock",
+                        "seller": {
+                          "@type": "Organization",
+                          "name": "Abuzar Industries"
+                        },
+                        "validFrom": "2024-01-01"
+                      }
+                    },
+                    "price": "2800",
+                    "priceCurrency": "INR",
+                    "availability": "https://schema.org/InStock",
+                    "seller": {
+                      "@type": "Organization",
+                      "name": "Abuzar Industries"
                     }
                   },
                   {
@@ -160,7 +220,37 @@ export default function RootLayout({
                     "itemOffered": {
                       "@type": "Product",
                       "name": "Neem Wood Planks",
-                      "description": "Durable neem wood planks for construction"
+                      "description": "Durable neem wood planks for construction",
+                      "image": "https://abuzarindustries.in/images/3.jpg",
+                      "category": "Timber",
+                      "brand": {
+                        "@type": "Brand",
+                        "name": "Abuzar Industries"
+                      },
+                      "offers": {
+                        "@type": "Offer",
+                        "price": "1500",
+                        "priceCurrency": "INR",
+                        "priceSpecification": {
+                          "@type": "PriceSpecification",
+                          "price": "1500",
+                          "priceCurrency": "INR",
+                          "unitText": "per cubic foot"
+                        },
+                        "availability": "https://schema.org/InStock",
+                        "seller": {
+                          "@type": "Organization",
+                          "name": "Abuzar Industries"
+                        },
+                        "validFrom": "2024-01-01"
+                      }
+                    },
+                    "price": "1500",
+                    "priceCurrency": "INR",
+                    "availability": "https://schema.org/InStock",
+                    "seller": {
+                      "@type": "Organization",
+                      "name": "Abuzar Industries"
                     }
                   }
                 ]

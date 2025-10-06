@@ -7,6 +7,7 @@ import { WhatsAppFloat } from "@/components/whatsapp-float"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { GalleryPreview } from "@/components/gallery-preview"
 import { ContactSection } from "@/components/contact-section"
+import { TeakWoodSchema, WhiteTeakWoodSchema, NeemWoodSchema } from "@/components/product-schema"
 
 export const metadata: Metadata = {
   title: "Best Teak Wood Chitradurga | Premium Timber Supplier | Abuzar Industries",
@@ -50,6 +51,9 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <>
+      <TeakWoodSchema />
+      <WhiteTeakWoodSchema />
+      <NeemWoodSchema />
       <Hero />
       <Highlights />
 
