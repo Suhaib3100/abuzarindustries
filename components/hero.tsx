@@ -35,7 +35,8 @@ export function Hero() {
           
           {/* Subtitle */}
           <p className="text-xl md:text-2xl text-gray-200 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Specialists in Teak, White Teak & Neem Wood Planks — Any Size Available
+            Specialists in Teak wood size, Planks<br />
+            and silly neem wood size
           </p>
           
           {/* Call to Action Buttons */}
