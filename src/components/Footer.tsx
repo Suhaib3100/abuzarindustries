@@ -26,7 +26,7 @@ export default function Footer() {
               </div>
             </div>
             <p className="text-sm leading-relaxed text-paper/55 max-w-xs">
-              Premium teak, white teak and neem — custom cut and delivered across Karnataka since three generations.
+              Premium teak, white teak and neem — custom cut and delivered across Karnataka for three generations.
             </p>
           </div>
 

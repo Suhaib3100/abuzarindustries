@@ -84,7 +84,7 @@ export default function Services() {
                   <div className="absolute inset-0">
                     <Image
                       src={s.img}
-                      alt=""
+                      alt={`${s.title} — Abuzar Industries, Chitradurga`}
                       fill
                       className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
                       sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 33vw"
