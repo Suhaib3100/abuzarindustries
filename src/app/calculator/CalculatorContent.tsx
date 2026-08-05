@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Printer, Send, X, Menu } from "lucide-react";
+import { Printer, Send, X } from "lucide-react";
 import {
   cft as cftCalc,
   inr,
@@ -331,26 +331,23 @@ export default function CalculatorContent() {
           </div>
           {/* computer-generated stamp */}
           <div className="q-stamp">COMPUTER GENERATED</div>
-          {/* masthead */}
+
+          {/* masthead — Cut Size simple-quote layout */}
           <div className="qh-card">
-            <div className="qh-brand">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="qh-logo" src="/images/logo-brand-512.png" alt="Abuzar Industries" />
-              <div>
-                <div className="qh-name">
-                  <span className="qh-chip">Quotation</span>
-                </div>
-                <div className="qh-sub qh-web">Generated from abuzarindustries.in</div>
+            <div className="qh-sq-head">
+              <div className="qh-side qh-no">
+                <span className="qh-lab">Quotation No.</span>
+                <input className="qh-input" value={quoteNo} onChange={(e) => setQuoteNo(e.target.value)} />
               </div>
-            </div>
-            <div className="rule-gold" />
-            <div className="qh-inner-row">
-              <div className="qh-cell">
+              <h2 className="qh-title">Wood Quotation</h2>
+              <div className="qh-side qh-date">
                 <span className="qh-lab">Date</span>
                 <input className="qh-input" value={date} onChange={(e) => setDate(e.target.value)} />
               </div>
+            </div>
+            <div className="qh-cust">
               <div className="qh-cell">
-                <span className="qh-lab">Customer Name</span>
+                <span className="qh-lab">Customer</span>
                 <input
                   className="qh-input"
                   value={customer}
@@ -387,7 +384,9 @@ export default function CalculatorContent() {
             {sections.map((sec, si) => (
               <div className="qsec" key={sec.id}>
                 <div className="qsec-head">
-                  <Menu size={15} strokeWidth={2.5} className="no-print opacity-60" />
+                  <span className="q-grain no-print" aria-hidden>
+                    <i /><i /><i />
+                  </span>
                   <input
                     className="qsec-name"
                     value={sec.wood}
@@ -403,76 +402,67 @@ export default function CalculatorContent() {
                   )}
                 </div>
 
-                <table>
-                  <thead>
-                    <tr>
-                      <th style={{ width: 26 }}>#</th>
-                      <th>CFT</th>
-                      {COLS.map((c) => (
-                        <th key={c.key}>
-                          {c.label}
-                          <small>{c.sub}</small>
-                        </th>
-                      ))}
-                      <th className="no-print" style={{ width: 26 }} />
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sec.rows.map((r, ri) => (
-                      <tr key={r.id}>
-                        <td className="q-idx">{ri + 1}</td>
-                        <td className="q-cft">{rowMeasure(r).toFixed(2)}</td>
-                        {COLS.map((c, ci) => (
-                          <td key={c.key}>
-                            <input
-                              id={cellId(si, ri, ci)}
-                              className="q-in"
-                              inputMode="decimal"
-                              value={r[c.key] as string}
-                              onChange={(e) => setCell(si, ri, c.key, e.target.value)}
-                              onKeyDown={(e) => onCellKey(e, si, ri, ci)}
-                            />
-                          </td>
-                        ))}
-                        <td className="no-print">
-                          <span className="q-rowx" onClick={() => delRow(si, ri)} role="button">
-                            <X size={13} />
-                          </span>
-                        </td>
-                      </tr>
+                <div className="q-thead">
+                  <span>#</span>
+                  <span>CFT</span>
+                  {COLS.map((c) => (
+                    <span key={c.key}>
+                      {c.label}
+                      <small className="q-unit">{c.sub}</small>
+                    </span>
+                  ))}
+                  <span className="no-print" />
+                </div>
+                {sec.rows.map((r, ri) => (
+                  <div className="q-row" key={r.id}>
+                    <span className="q-idx">{ri + 1}</span>
+                    <span className="q-cft">{rowMeasure(r).toFixed(2)}</span>
+                    {COLS.map((c, ci) => (
+                      <input
+                        key={c.key}
+                        id={cellId(si, ri, ci)}
+                        className="q-in"
+                        inputMode="decimal"
+                        value={r[c.key] as string}
+                        onChange={(e) => setCell(si, ri, c.key, e.target.value)}
+                        onKeyDown={(e) => onCellKey(e, si, ri, ci)}
+                      />
                     ))}
-                  </tbody>
-                </table>
+                    <span className="q-rowx no-print" onClick={() => delRow(si, ri)} role="button">
+                      <X size={13} />
+                    </span>
+                  </div>
+                ))}
 
                 <div className="qsec-foot">
-                  <button className="q-addline no-print" onClick={() => addRow(si)}>
-                    + Add
-                    <br />
-                    Line
+                  <button type="button" className="q-addline no-print" onClick={() => addRow(si)}>
+                    + Line
                   </button>
-                  <div>
-                    <span className="qf-lab">Total CFT</span>
-                    <span className="qf-val">{sectionMeasure(sec).toFixed(2)}</span>
-                  </div>
-                  <div>
-                    <span className="qf-lab">Rate ₹/cft</span>
-                    <input
-                      className="q-rate"
-                      inputMode="decimal"
-                      value={sec.rate}
-                      onChange={(e) => setSec(si, { rate: num(e.target.value) })}
-                    />
-                  </div>
-                  <div className="qf-price">
-                    <span className="qf-lab">Total Price</span>
-                    <span className="qf-val">₹ {inr(sectionPrice(sec))}</span>
+                  <div className="qf-oneline">
+                    <div className="qf-sc">
+                      <span className="qf-lab">Total CFT</span>
+                      <span className="qf-val">{sectionMeasure(sec).toFixed(2)}</span>
+                    </div>
+                    <div className="qf-sc">
+                      <span className="qf-lab">Rate ₹/cft</span>
+                      <input
+                        className="q-rate"
+                        inputMode="decimal"
+                        value={sec.rate}
+                        onChange={(e) => setSec(si, { rate: num(e.target.value) })}
+                      />
+                    </div>
+                    <div className="qf-sc qf-amt">
+                      <span className="qf-lab">Total Price</span>
+                      <span className="qf-val">₹ {inr(sectionPrice(sec))}</span>
+                    </div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
 
-          <button className="q-addwood no-print" onClick={addWood}>
+          <button type="button" className="q-addwood no-print" onClick={addWood}>
             + Add Wood Type
           </button>
 
@@ -484,12 +474,13 @@ export default function CalculatorContent() {
             </div>
             <div className="qt-row">
               <span className="qt-lab">
-                <span
-                  className={`q-switch ${gstOn ? "on" : ""}`}
-                  role="switch"
-                  aria-checked={gstOn}
+                <button
+                  type="button"
+                  className={`q-gst-toggle ${gstOn ? "on" : ""}`}
                   onClick={() => setGstOn((v) => !v)}
-                />
+                >
+                  {gstOn ? "%" : "off"}
+                </button>
                 GST
                 <input
                   className="qt-gstin"
