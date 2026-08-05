@@ -5,6 +5,13 @@ import { Reveal, Stagger, StaggerItem } from "./motion/Reveal";
 
 const PHONE = "+919845378626";
 
+const GOOGLE_REVIEW_URL =
+  "https://www.google.com/maps/place/ABUZAR+INDUSTRIES/@14.2304243,76.3906535,17z/data=!4m8!3m7!1s0x3bba75de8a42ad97:0x9a8be15dab4a6208!8m2!3d14.2304243!4d76.3906535!9m1!1b1!16s%2Fg%2F11g3zdmpmp!5m2!1e4!1e2";
+
+const REVIEW_QR_SRC =
+  "https://api.qrserver.com/v1/create-qr-code/?size=160x160&margin=8&data=" +
+  encodeURIComponent(GOOGLE_REVIEW_URL);
+
 const contacts = [
   { icon: Phone, label: "Call Us", value: "+91 98453 78626", href: "tel:+919845378626" },
   { icon: Mail, label: "Email", value: "abuzarindustries@gmail.com", href: "mailto:abuzarindustries@gmail.com" },
@@ -128,8 +135,37 @@ export default function Contact() {
           </Reveal>
         </div>
 
-        {/* Map */}
+        {/* Review QR + Map */}
         <Reveal className="mt-14 max-w-5xl mx-auto px-4 sm:px-6">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-8 p-5 rounded-2xl border border-walnut/10 bg-panel/40">
+            <a
+              href={GOOGLE_REVIEW_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 text-center group"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={REVIEW_QR_SRC}
+                alt="Scan to rate us on Google"
+                width={120}
+                height={120}
+                className="mx-auto rounded-lg bg-paper p-2 shadow-sm group-hover:shadow-md transition-shadow"
+              />
+              <span className="mt-2 block text-[11px] font-semibold tracking-wider uppercase text-ink-soft/60">
+                Scan to rate us
+              </span>
+            </a>
+            <div className="text-center sm:text-left max-w-sm">
+              <div className="font-[family:var(--font-serif)] font-semibold text-lg text-walnut">
+                Loved the wood?
+              </div>
+              <p className="mt-1.5 text-sm text-ink-soft/75 leading-relaxed">
+                Scan the QR or tap to leave a Google review — it helps other
+                builders find us.
+              </p>
+            </div>
+          </div>
           <div className="rounded-2xl overflow-hidden border border-walnut/10 shadow-md">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1940!2d76.3906535!3d14.2304243!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bba75de8a42ad97%3A0x9a8be15dab4a6208!2sABUZAR%20INDUSTRIES!5e0!3m2!1sen!2sin!4v1"

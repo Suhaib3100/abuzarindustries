@@ -20,6 +20,11 @@ const COMMON_WOODS = ["Teak Wood", "White Teak", "Neem Wood"];
 
 const PHONE = "919845378626";
 
+/** Unofficial app public ingest — override with NEXT_PUBLIC_QUOTE_API_URL. */
+const QUOTE_API =
+  process.env.NEXT_PUBLIC_QUOTE_API_URL ||
+  "https://safa-unofficial.vercel.app/api/quotation-from-site";
+
 export default function QuoteTool() {
   const [rows, setRows] = useState<Row[]>([
     { id: 1, l: "", w: "", t: "", pcs: "1" },
@@ -28,6 +33,9 @@ export default function QuoteTool() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [err, setErr] = useState("");
+  const [hp, setHp] = useState(""); // honeypot
   const [nextId, setNextId] = useState(2);
 
   const addRow = () => {
@@ -80,10 +88,58 @@ export default function QuoteTool() {
     return encodeURIComponent(msg);
   }, [rows, woodType, name, phone, totalCft, estimate]);
 
-  const sendWhatsApp = () => {
-    const url = `https://wa.me/${PHONE}?text=${buildMessage()}`;
-    window.open(url, "_blank");
-    setSent(true);
+  const sendToUs = async () => {
+    if (sending) return;
+    setErr("");
+    if (!name.trim()) {
+      setErr("Please enter your name.");
+      return;
+    }
+    if (!woodType.trim()) {
+      setErr("Please choose a wood type.");
+      return;
+    }
+    const payloadRows = rows
+      .map((r) => ({
+        l: parseFloat(r.l) || 0,
+        w: parseFloat(r.w) || 0,
+        t: parseFloat(r.t) || 0,
+        pcs: parseInt(r.pcs) || 1,
+      }))
+      .filter((r) => r.l > 0 && r.w > 0 && r.t > 0);
+    if (!payloadRows.length) {
+      setErr("Enter at least one full L × W × T line.");
+      return;
+    }
+
+    setSending(true);
+    try {
+      const res = await fetch(QUOTE_API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          phone: phone.trim(),
+          woodType: woodType.trim(),
+          rows: payloadRows,
+          website: hp, // honeypot
+        }),
+      });
+      if (!res.ok) {
+        const body = (await res.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(body?.error || "Could not send — try WhatsApp");
+      }
+      setSent(true);
+      // Also open WhatsApp so the yard gets an instant ping
+      window.open(`https://wa.me/${PHONE}?text=${buildMessage()}`, "_blank");
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Could not send");
+      // Fallback: still open WhatsApp so the customer isn't stuck
+      window.open(`https://wa.me/${PHONE}?text=${buildMessage()}`, "_blank");
+      setSent(true);
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -116,8 +172,8 @@ export default function QuoteTool() {
             <span className="text-ochre">Quotation</span>
           </h2>
           <p className="mt-4 text-ink-soft/80 text-sm sm:text-base leading-relaxed">
-            Enter your dimensions below and send us the details on WhatsApp.
-            We&apos;ll reply with a price within minutes.
+            Enter your dimensions below and send them to us. We&apos;ll reply with a
+            price within minutes — WhatsApp opens as a backup.
           </p>
         </motion.div>
 
@@ -126,8 +182,20 @@ export default function QuoteTool() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
-          className="bg-paper border border-walnut/5 rounded-2xl p-6 sm:p-8 shadow-lg shadow-walnut/5"
+          className="relative bg-paper border border-walnut/5 rounded-2xl p-6 sm:p-8 shadow-lg shadow-walnut/5"
         >
+          {/* honeypot — leave empty */}
+          <input
+            type="text"
+            name="website"
+            value={hp}
+            onChange={(e) => setHp(e.target.value)}
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden
+            className="absolute opacity-0 pointer-events-none h-0 w-0"
+          />
+
           {/* Customer info */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             <div>
@@ -335,14 +403,20 @@ export default function QuoteTool() {
             </div>
 
             <button
-              onClick={sendWhatsApp}
-              disabled={!rows.some((r) => r.l && r.w && r.t)}
+              onClick={sendToUs}
+              disabled={sending || !rows.some((r) => r.l && r.w && r.t)}
               className="flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-green text-paper text-sm font-semibold hover:bg-green/90 transition-[background,transform] pressable disabled:opacity-30 disabled:cursor-not-allowed disabled:active:scale-100 shadow-lg shadow-green/20"
             >
               <Send size={16} />
-              Send on WhatsApp
+              {sending ? "Sending…" : "Send to us"}
             </button>
           </div>
+
+          {err && (
+            <div className="mt-4 p-3 rounded-xl bg-danger/5 border border-danger/15 text-danger text-sm">
+              {err}
+            </div>
+          )}
 
           {/* Success message */}
           <AnimatePresence>
@@ -353,8 +427,7 @@ export default function QuoteTool() {
                 exit={{ opacity: 0, height: 0 }}
                 className="mt-4 p-4 rounded-xl bg-green/5 border border-green/10 text-green text-sm"
               >
-                ✅ Quotation sent! We&apos;ll get back to you on WhatsApp
-                shortly.
+                ✅ Quotation received! We&apos;ll get back to you shortly.
               </motion.div>
             )}
           </AnimatePresence>
