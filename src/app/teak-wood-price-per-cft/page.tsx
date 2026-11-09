@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import ContentPage, { Section, Table, Related } from "@/components/ContentPage";
 import { PRICES, rupees } from "@/lib/business";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: `Teak Wood Price per CFT (${PRICES.asOf})`,
   description: `Chitradurga rates: teak A grade about ${rupees(PRICES.teakA)}/CFT, B grade ${rupees(PRICES.teakB)}, white teak ${rupees(PRICES.whiteTeak)}, neem ${rupees(PRICES.neem)}. How to work out CFT.`,
-  alternates: { canonical: "/teak-wood-price-per-cft" },
-};
+  path: "/teak-wood-price-per-cft",
+});
 
 export default function PricePage() {
   return (

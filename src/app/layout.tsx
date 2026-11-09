@@ -7,6 +7,7 @@ import Preloader from "@/components/Preloader";
 import { ScrollProgress } from "@/components/motion/Patterns";
 import JsonLd from "@/components/JsonLd";
 import { BUSINESS, GOOGLE, HOURS, SAME_AS, SITE_URL } from "@/lib/business";
+import { HOME_OG, openGraph } from "@/lib/seo";
 
 const display = Saira_Condensed({
   variable: "--font-display",
@@ -89,15 +90,8 @@ export const metadata: Metadata = {
   },
   description:
     "Ghana, Togo and African teak (Burma on order), white teak and neem in Chitradurga since 1995. Dried to about 10% moisture and cut to any size.",
-  openGraph: {
-    title: "Abuzar Industries: Teak Wood Supplier in Chitradurga, Karnataka",
-    description:
-      "Teak, white teak and neem wood since 1995. Cut to any size at our KSSIDC Industrial Area yard, Chitradurga.",
-    siteName: "Abuzar Industries",
-    type: "website",
-    locale: "en_IN",
-    images: [{ url: "/images/logo-brand-og.png", width: 1200, height: 1200, alt: "Abuzar Industries" }],
-  },
+  // Fallback for routes without their own (e.g. 404). Pages set theirs with pageMetadata().
+  openGraph: openGraph(HOME_OG.title, HOME_OG.description),
   twitter: { card: "summary" },
 };
 

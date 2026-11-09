@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import ContentPage, { Section, Related } from "@/components/ContentPage";
 import { BUSINESS, DELIVERY_TOWNS, HOURS } from "@/lib/business";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Timber Delivery from Chitradurga",
   description: `Timber delivery from our Chitradurga yard to ${DELIVERY_TOWNS.join(", ")} and nearby towns, charged by distance.`,
-  alternates: { canonical: "/delivery" },
-};
+  path: "/delivery",
+});
 
 export default function DeliveryPage() {
   return (

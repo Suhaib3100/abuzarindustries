@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import ContentPage, { Section, Table, Related } from "@/components/ContentPage";
 import { PRICES, rupees } from "@/lib/business";
 import { FRAME_SIZES } from "@/lib/content";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Teak Wood for Doors, Frames and Windows",
   description:
     'Which teak for the main door, inner doors, frames and windows, frame sizes (5"×3", 6"×4", 8"×4") and how much CFT one door frame needs.',
-  alternates: { canonical: "/teak-wood-for-doors-and-frames" },
-};
+  path: "/teak-wood-for-doors-and-frames",
+});
 
 // Worked example: one door frame for a 7 ft × 3.5 ft opening, two 7 ft legs + a 4 ft top piece = 18 running feet.
 const RUN_FT = 18;

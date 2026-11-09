@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import ContentPage, { Section, Table, Related } from "@/components/ContentPage";
 import JsonLd from "@/components/JsonLd";
 import { BUSINESS, PRICES, SITE_URL, rupees } from "@/lib/business";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "White Teak Wood in Chitradurga",
   description: `White teak at about ${rupees(PRICES.whiteTeak)} per CFT for inner doors, windows and interior woodwork. Cut to any size at Abuzar Industries, Chitradurga.`,
-  alternates: { canonical: "/white-teak-wood" },
-};
+  path: "/white-teak-wood",
+});
 
 export default function WhiteTeakPage() {
   return (

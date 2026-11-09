@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import ProductsContent from "./ProductsContent";
 import JsonLd from "@/components/JsonLd";
 import { BUSINESS, PRICES, SITE_URL, rupees } from "@/lib/business";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Teak, White Teak and Neem Wood Prices",
   description: `Teak from ${rupees(PRICES.teakB)}/CFT (A grade about ${rupees(PRICES.teakA)}), white teak ${rupees(PRICES.whiteTeak)}, neem ${rupees(PRICES.neem)}. Ghana, Togo, African teak in stock in Chitradurga.`,
-  alternates: { canonical: "/products" },
-};
+  path: "/products",
+});
 
 const item = (name: string, path: string, image: string, price: number) => ({
   "@type": "ListItem",

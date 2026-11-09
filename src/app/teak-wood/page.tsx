@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import ContentPage, { Section, Table, Related } from "@/components/ContentPage";
 import JsonLd from "@/components/JsonLd";
 import { BUSINESS, PRICES, SITE_URL, rupees } from "@/lib/business";
 import { FRAME_SIZES, TEAK_WEIGHT } from "@/lib/content";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Teak Wood in Chitradurga: Ghana, Togo, Burma",
   description: `Ghana, Togo and African teak in stock, Burma teak on order. A grade about ${rupees(PRICES.teakA)}/CFT, B grade about ${rupees(PRICES.teakB)}/CFT. About 10% moisture, cut to any size.`,
-  alternates: { canonical: "/teak-wood" },
-};
+  path: "/teak-wood",
+});
 
 const types = [
   {
@@ -59,21 +60,26 @@ export default function TeakWoodPage() {
             "Seasoned teak wood at about 10% moisture, A and B grade, cut to any size at Abuzar Industries, Chitradurga.",
           image: `${SITE_URL}/images/teak-product.jpg`,
           brand: { "@type": "Brand", name: BUSINESS.name },
-          offers: {
+          // One Offer per grade: Google requires a price on every Offer, and a
+          // minPrice/maxPrice range alone does not count.
+          offers: [
+            { grade: "A grade", price: PRICES.teakA },
+            { grade: "B grade", price: PRICES.teakB },
+          ].map((o) => ({
             "@type": "Offer",
+            name: `Teak wood, ${o.grade}`,
             url: `${SITE_URL}/teak-wood`,
             priceCurrency: "INR",
             availability: "https://schema.org/InStock",
             priceSpecification: {
               "@type": "UnitPriceSpecification",
               priceCurrency: "INR",
-              minPrice: PRICES.teakB,
-              maxPrice: PRICES.teakA,
+              price: o.price,
               unitCode: "FTQ",
               unitText: "cubic foot",
             },
             seller: { "@type": "Organization", name: BUSINESS.name },
-          },
+          })),
         }}
       />
 

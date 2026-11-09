@@ -10,9 +10,11 @@ import Faq from "@/components/Faq";
 import Contact from "@/components/Contact";
 import { FAQ_HOME } from "@/lib/content";
 import { yearsInBusiness } from "@/lib/business";
+import { HOME_OG, openGraph } from "@/lib/seo";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
+  openGraph: openGraph(HOME_OG.title, HOME_OG.description, "/"),
 };
 
 export default function Home() {
