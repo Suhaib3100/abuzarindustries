@@ -89,7 +89,7 @@ export const metadata: Metadata = {
     template: "%s | Abuzar Industries",
   },
   description:
-    "Ghana, Togo and African teak (Burma on order), white teak and neem in Chitradurga since 1995. Dried to about 10% moisture and cut to any size.",
+    "Ghana, Togo and African teak (Burma on order), white teak and neem in Chitradurga since 1995. Teak dried to about 10% moisture; all wood cut to any size.",
   // Fallback for routes without their own (e.g. 404). Pages set theirs with pageMetadata().
   openGraph: openGraph(HOME_OG.title, HOME_OG.description),
   twitter: { card: "summary" },
