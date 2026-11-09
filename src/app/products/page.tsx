@@ -1,72 +1,49 @@
 import type { Metadata } from "next";
 import ProductsContent from "./ProductsContent";
+import JsonLd from "@/components/JsonLd";
+import { BUSINESS, PRICES, SITE_URL, rupees } from "@/lib/business";
 
 export const metadata: Metadata = {
-  title: "Best Teak Wood Products Chitradurga | Premium Timber | Abuzar Industries",
-  description:
-    "Best teak wood products in Chitradurga. Premium teak, white teak & neem wood planks. Custom sizes, construction timber, furniture wood. KSSIDC Industrial Area, DVG Road.",
-  alternates: { canonical: "https://abuzarindustries.in/products" },
+  title: "Teak, White Teak and Neem Wood Prices",
+  description: `Teak from ${rupees(PRICES.teakB)}/CFT (A grade about ${rupees(PRICES.teakA)}), white teak ${rupees(PRICES.whiteTeak)}, neem ${rupees(PRICES.neem)}. Ghana, Togo, African teak in stock in Chitradurga.`,
+  alternates: { canonical: "/products" },
 };
+
+const item = (name: string, path: string, image: string, price: number) => ({
+  "@type": "ListItem",
+  item: {
+    "@type": "Product",
+    name,
+    image: `${SITE_URL}${image}`,
+    url: `${SITE_URL}${path}`,
+    brand: { "@type": "Brand", name: BUSINESS.name },
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "INR",
+      availability: "https://schema.org/InStock",
+      priceSpecification: {
+        "@type": "UnitPriceSpecification",
+        priceCurrency: "INR",
+        price,
+        unitCode: "FTQ",
+        unitText: "cubic foot",
+      },
+    },
+  },
+});
 
 export default function ProductsPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify([
-            {
-              "@context": "https://schema.org",
-              "@type": "Product",
-              name: "Premium Teak Wood Planks",
-              description:
-                "High-grade imported teak wood — Ghana, Togo & Burma. Kiln-dried, ready for joinery, furniture and premium construction.",
-              image: "https://abuzarindustries.in/images/teak-product.jpg",
-              brand: { "@type": "Brand", name: "Abuzar Industries" },
-              offers: {
-                "@type": "Offer",
-                price: "4000",
-                priceCurrency: "INR",
-                priceUnit: "per cubic foot",
-                availability: "https://schema.org/InStock",
-                seller: { "@type": "Organization", name: "Abuzar Industries" },
-              },
-            },
-            {
-              "@context": "https://schema.org",
-              "@type": "Product",
-              name: "White Teak Wood Planks",
-              description:
-                "Quality white teak wood for doors, windows, interior woodwork, and construction. Seasoned and graded.",
-              image: "https://abuzarindustries.in/images/white-teak-product.jpg",
-              brand: { "@type": "Brand", name: "Abuzar Industries" },
-              offers: {
-                "@type": "Offer",
-                price: "2800",
-                priceCurrency: "INR",
-                priceUnit: "per cubic foot",
-                availability: "https://schema.org/InStock",
-                seller: { "@type": "Organization", name: "Abuzar Industries" },
-              },
-            },
-            {
-              "@context": "https://schema.org",
-              "@type": "Product",
-              name: "Neem Wood Planks",
-              description:
-                "Durable, pest-resistant neem wood. Perfect for outdoor furniture, construction, and agricultural use.",
-              image: "https://abuzarindustries.in/images/neem-product.jpg",
-              brand: { "@type": "Brand", name: "Abuzar Industries" },
-              offers: {
-                "@type": "Offer",
-                price: "1000",
-                priceCurrency: "INR",
-                priceUnit: "per cubic foot",
-                availability: "https://schema.org/InStock",
-                seller: { "@type": "Organization", name: "Abuzar Industries" },
-              },
-            },
-          ]),
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          itemListElement: [
+            item("Teak wood (B grade)", "/teak-wood", "/images/teak-product.jpg", PRICES.teakB),
+            item("White teak wood", "/white-teak-wood", "/images/white-teak-product.jpg", PRICES.whiteTeak),
+            item("Neem wood", "/neem-wood", "/images/neem-product.jpg", PRICES.neem),
+          ].map((x, i) => ({ ...x, position: i + 1 })),
         }}
       />
       <ProductsContent />

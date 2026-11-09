@@ -281,10 +281,10 @@ export default function CalculatorContent() {
         <div className="max-w-[900px] mx-auto px-4 py-3 flex items-center justify-between gap-3">
           <div>
             <h1 className="font-[family:var(--font-display)] font-bold text-lg text-walnut leading-none">
-              Quotation Calculator
+              Timber CFT Calculator
             </h1>
             <p className="text-[11px] text-ink-soft/60 mt-0.5">
-              Fill sizes · arrow keys to move · print or send
+              CFT = L(ft) × W(in) × T(in) ÷ 144 · estimate
             </p>
           </div>
           <div className="flex flex-col items-end gap-1">

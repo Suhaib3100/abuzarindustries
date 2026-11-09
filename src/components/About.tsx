@@ -1,22 +1,23 @@
 "use client";
 
-import { Shield, Users, Leaf, TrendingUp } from "lucide-react";
+import { Shield, Users, Star, CalendarDays } from "lucide-react";
 import VideoFrame from "./VideoFrame";
 import { Reveal, Stagger, StaggerItem } from "./motion/Reveal";
 import { AnimatedCounter } from "./motion/Patterns";
+import { BUSINESS, GOOGLE, YEARS } from "@/lib/business";
 
 const stats = [
-  { icon: Shield, to: 30, suffix: "+", label: "Years" },
-  { icon: Users, to: 1000, suffix: "+", label: "Clients" },
-  { icon: Leaf, to: 50000, suffix: "+", label: "CFT Delivered" },
-  { icon: TrendingUp, to: 99, suffix: "%", label: "On-Time" },
+  { icon: Shield, to: YEARS, suffix: "+", label: "Years" },
+  { icon: Users, to: BUSINESS.customers, suffix: "+", label: "Customers" },
+  { icon: Star, to: GOOGLE.rating, suffix: "★", label: `Google (${GOOGLE.reviews} reviews)`, decimals: 1 },
+  { icon: CalendarDays, to: 7, suffix: "", label: "Days open a week" },
 ];
 
 const values = [
-  "Premium imported timber only",
+  "Imported teak, dried to about 10%",
   "Custom dimension cutting",
-  "Delivery across Karnataka",
-  "Fair and transparent pricing",
+  "Pick your wood at the yard",
+  "Delivery charged by distance",
 ];
 
 export default function About() {
@@ -63,25 +64,25 @@ export default function About() {
               <span className="eyebrow text-ochre">About</span>
             </div>
             <h2 className="t-h2 text-walnut mb-6">
-              Leading Merchant
+              Timber Merchants
               <br />
               <span className="gold-text italic">in Chitradurga</span>
             </h2>
             <div className="space-y-4 text-ink-soft/85 text-sm sm:text-base leading-relaxed">
               <p>
                 Founded in 1995 by <strong className="text-walnut">Athaulla Afroz</strong>,
-                Abuzar Industries grew from humble beginnings into the leading timber
-                supplier in the region — built on quality and trust.
+                Abuzar Industries grew from a small start into a trusted timber
+                yard in Chitradurga, built on quality and fair dealing.
               </p>
               <p>
                 Today his son <strong className="text-walnut">Mohammed Afsar</strong> leads,
                 blending three decades of craft with modern yard management to serve
-                builders, carpenters and craftsmen across Karnataka.
+                builders, carpenters and families in Chitradurga and nearby towns.
               </p>
               <p>
-                Based at KSSIDC Industrial Area, DVG Road, Chitradurga, we maintain
-                large stockyards of premium imported timber and cut every plank to
-                your spec — zero waste, no compromise.
+                Based at KSSIDC Industrial Area, DVG Road, Chitradurga, we keep Ghana,
+                Togo and African teak, white teak and neem in stock and cut every
+                piece to your size. Most customers walk the yard and pick their own wood.
               </p>
             </div>
 
@@ -104,7 +105,7 @@ export default function About() {
             <StaggerItem key={s.label} className="h-full">
               <div className="h-full bg-paper py-5 sm:py-8 px-3 text-center transition-colors duration-300 hover:bg-panel/50">
                 <s.icon size={20} className="text-ochre mx-auto mb-3" strokeWidth={1.75} />
-                <div className="font-[family:var(--font-serif)] font-semibold text-3xl text-walnut"><AnimatedCounter from={0} to={s.to} suffix={s.suffix} /></div>
+                <div className="font-[family:var(--font-serif)] font-semibold text-3xl text-walnut"><AnimatedCounter from={0} to={s.to} suffix={s.suffix} decimals={s.decimals} /></div>
                 <div className="eyebrow text-[0.6rem] text-ink-soft/60 mt-1">{s.label}</div>
               </div>
             </StaggerItem>

@@ -8,16 +8,12 @@ const KA_PATH =
 
 // Real city coordinates projected into the SVG viewBox using the same transform
 const CITIES = [
-  { label: "Belagavi",     x: 31.8,  y: 99.0 },
-  { label: "Hubballi",     x: 65.0,  y: 115.7 },
-  { label: "Ballari",      x: 161.3, y: 122.9 },
-  { label: "Davangere",    x: 107.8, y: 146.4 },
-  { label: "Chitradurga",  x: 133.5, y: 154.3, hub: true },
-  { label: "Shivamogga",   x: 89.1,  y: 164.6 },
-  { label: "Udupi",        x: 44.6,  y: 184.7 },
-  { label: "Mangaluru",    x: 51.1,  y: 199.4 },
-  { label: "Bengaluru",    x: 197.2, y: 197.3 },
-  { label: "Mysuru",       x: 146.9, y: 220.2 },
+  // Towns we deliver to regularly (owner, 2026-11-09). Hiriyur is too close to the hub to label at this scale.
+  { label: "Hubballi",       x: 65.0,  y: 115.7 },
+  { label: "Hosapete",       x: 133.0, y: 118.8, labelAbove: true },
+  { label: "Davanagere",     x: 107.8, y: 146.4 },
+  { label: "Chitradurga",    x: 133.5, y: 154.3, hub: true },
+  { label: "Chikkamagaluru", x: 99.8,  y: 185.4 },
 ];
 
 // Routes from Chitradurga hub to each destination — slight bezier arc
@@ -29,6 +25,9 @@ const ROUTES = CITIES.filter((c) => !c.hub).map((c) => {
     d: `M133.5,154.3 Q${cx},${cy} ${c.x},${c.y}`,
   };
 });
+
+// The truck runs on the longest route.
+const TRUCK_ROUTE = ROUTES.find((r) => r.city === "Hubballi") ?? ROUTES[0];
 
 /* Tiny truck icon */
 function TruckIcon() {
@@ -181,7 +180,7 @@ export default function DeliveryMap() {
             <circle cx={c.x} cy={c.y} r="5" fill="#B9772E" opacity={0.12} />
             <text
               x={c.x}
-              y={c.y + 13}
+              y={"labelAbove" in c && c.labelAbove ? c.y - 8 : c.y + 13}
               textAnchor="middle"
               fontSize="5"
               fill="#6E5E4E"
@@ -253,7 +252,7 @@ export default function DeliveryMap() {
 
         {/* ── Animated truck on longest route ── */}
         <motion.g
-          style={{ offsetPath: `path("${ROUTES[6].d}")` }}
+          style={{ offsetPath: `path("${TRUCK_ROUTE.d}")` }}
           initial={{ offsetDistance: "0%" }}
           animate={{ offsetDistance: "100%" }}
           transition={{ duration: 14, repeat: Infinity, ease: "linear" }}
@@ -280,7 +279,7 @@ export default function DeliveryMap() {
           >
             🚛
           </motion.span>
-          <span className="text-[8px] text-ink-soft/70 font-medium">Live tracking</span>
+          <span className="text-[8px] text-ink-soft/70 font-medium">Leaves with you</span>
         </div>
       </div>
     </div>

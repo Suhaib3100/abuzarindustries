@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { MapPin, Phone, Mail, Clock, Send, MessageCircle } from "lucide-react";
+import { BUSINESS, GOOGLE, HOURS } from "@/lib/business";
 
 const PHONE = "919845378626";
 
@@ -21,13 +22,13 @@ const cards = [
   {
     icon: MapPin,
     label: "Visit Our Yard",
-    value: "KSSIDC Industrial Area, DVG Road,\nChitradurga, Karnataka",
-    href: "https://maps.google.com/?q=KSSIDC+Industrial+Area+DVG+Road+Chitradurga",
+    value: `${BUSINESS.street},\n${BUSINESS.city}, ${BUSINESS.region} ${BUSINESS.postalCode}\n${BUSINESS.landmark}`,
+    href: GOOGLE.mapsUrl,
   },
   {
     icon: Clock,
     label: "Working Hours",
-    value: "Monday – Saturday\n9:00 AM – 7:00 PM",
+    value: HOURS.map((h) => `${h.label}: ${h.time}`).join("\n"),
     href: null,
   },
 ];
@@ -107,7 +108,7 @@ export default function ContactContent() {
               <div className="rounded-xl overflow-hidden border border-walnut/5 aspect-[16/9]">
                 <iframe
                   title="Abuzar Industries — KSSIDC Industrial Area, DVG Road, Chitradurga"
-                  src="https://www.google.com/maps?q=KSSIDC+Industrial+Area,+DVG+Road,+Chitradurga,+Karnataka&output=embed"
+                  src={`https://maps.google.com/maps?q=${BUSINESS.geo.lat},${BUSINESS.geo.lng}&z=16&output=embed`}
                   className="w-full h-full border-0"
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"

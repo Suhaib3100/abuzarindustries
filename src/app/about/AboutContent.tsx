@@ -43,8 +43,8 @@ export default function AboutContent() {
               <span className="text-ochre">Abuzar Industries</span>
             </h1>
             <p className="mt-6 max-w-2xl mx-auto text-base sm:text-lg text-ink-soft/80 leading-relaxed">
-              Three decades of excellence in timber supply — from humble
-              beginnings to industry leadership in Chitradurga.
+              Three decades of timber supply in Chitradurga, from a small start
+              in 1995 to three generations of the family today.
             </p>
           </motion.div>
         </div>

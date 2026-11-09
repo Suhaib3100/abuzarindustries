@@ -21,7 +21,7 @@ const steps = [
     icon: Truck,
     n: "03",
     title: "Delivered to Site",
-    desc: "Reliable delivery from our Chitradurga yard across Karnataka.",
+    desc: "The truck leaves our Chitradurga yard with you. Delivery is charged by distance.",
   },
 ];
 

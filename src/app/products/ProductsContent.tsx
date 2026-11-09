@@ -15,6 +15,7 @@ import {
   Box,
   ImageIcon,
 } from "lucide-react";
+import { PRICES, rupees } from "@/lib/business";
 
 const PlankViewer = dynamic(() => import("@/components/three/PlankViewer"), {
   ssr: false,
@@ -40,11 +41,12 @@ const products = [
     videoPoster: "/plank-teak-poster.jpg",
     species: "Teak Wood",
     dims: { l: 96, w: 8, t: 2 }, // 8' × 8" × 2" in inches
-    sizes: ['2" × 6" × 6\'', '2" × 8" × 8\'', "Custom sizes available"],
-    price: "₹4,000",
-    unit: "per cubic foot",
-    desc: "High-grade imported teak — Ghana, Togo & Burma. Kiln-dried and ready for joinery, furniture, doors, and premium construction.",
+    sizes: ['5" × 3" frames', '6" × 4" frames', '8" × 4" frames', "Any size cut"],
+    price: `From ${rupees(PRICES.teakB)}`,
+    unit: `per CFT · A grade about ${rupees(PRICES.teakA)}`,
+    desc: "Ghana, Togo and African teak in stock, Burma teak on order. Dried to about 10% moisture, for doors, frames, windows and furniture.",
     tag: "Best Seller",
+    href: "/teak-wood",
   },
   {
     name: "White Teak Wood Planks",
@@ -54,10 +56,11 @@ const products = [
     species: "White Teak",
     dims: { l: 96, w: 6, t: 2 },
     sizes: ['1.5" × 6" × 6\'', '2" × 6" × 8\'', "Custom sizes available"],
-    price: "₹2,800",
-    unit: "per cubic foot",
-    desc: "Quality white teak for doors, windows, frames, and interior woodworking projects.",
+    price: rupees(PRICES.whiteTeak),
+    unit: "per CFT, approx.",
+    desc: "Pale, light and easy to work. A lower-cost choice for inner doors, windows and interior work.",
     tag: "Popular",
+    href: "/white-teak-wood",
   },
   {
     name: "Neem Wood Planks",
@@ -67,33 +70,34 @@ const products = [
     species: "Neem Wood",
     dims: { l: 72, w: 6, t: 2 },
     sizes: ['1" × 4" × 6\'', '2" × 6" × 8\'', "Custom sizes available"],
-    price: "₹1,000",
-    unit: "per cubic foot",
-    desc: "Durable, pest-resistant neem wood — ideal for outdoor furniture and general construction.",
+    price: rupees(PRICES.neem),
+    unit: "per CFT, approx.",
+    desc: "Hard, strong wood that insects tend to avoid. For outdoor furniture, farm sheds and general building.",
     tag: "Value",
+    href: "/neem-wood",
   },
 ];
 
 const whyUs = [
   {
     icon: ShieldCheck,
-    title: "Best Quality Teak Wood",
-    desc: "The finest teak wood in Chitradurga with premium quality and durability.",
+    title: "Dried and Graded",
+    desc: "Teak at about 10% moisture, in A and B grades. Pick your own pieces at the yard.",
   },
   {
     icon: Ruler,
     title: "Custom Sizing Available",
-    desc: "Timber cut to your exact specifications — any size, any dimension.",
+    desc: "Cut to your exact length, width and thickness: frames, planks and battens.",
   },
   {
     icon: Truck,
-    title: "Timely Delivery",
-    desc: "Fast delivery across Karnataka from our KSSIDC Industrial Area yard.",
+    title: "Delivery by Distance",
+    desc: "Regular trips to Davanagere, Hosapete, Hubballi, Hiriyur and Chikkamagaluru.",
   },
   {
     icon: BadgeIndianRupee,
-    title: "Competitive Pricing",
-    desc: "Best timber prices in Chitradurga — transparent, with no hidden costs.",
+    title: "Clear Rates",
+    desc: "Approximate rates on this site; call for today's exact rate.",
   },
 ];
 
@@ -113,13 +117,13 @@ export default function ProductsContent() {
               Our Products
             </span>
             <h1 className="font-[family:var(--font-display)] font-bold text-5xl sm:text-6xl md:text-7xl leading-[0.95] tracking-tight text-walnut">
-              Best Teak Wood
+              Teak, White Teak &amp; Neem
               <br />
               <span className="text-ochre">in Chitradurga</span>
             </h1>
             <p className="mt-6 max-w-2xl mx-auto text-base sm:text-lg text-ink-soft/80 leading-relaxed">
-              Premium teak, white teak, and neem wood planks — custom cut and
-              delivered across Karnataka.
+              Ghana, Togo and African teak in stock (Burma on order), white teak
+              and neem wood, cut to any size at our Chitradurga yard.
             </p>
           </motion.div>
         </div>
@@ -190,7 +194,7 @@ export default function ProductsContent() {
 
                 <div className="p-6">
                   <h3 className="font-[family:var(--font-display)] font-bold text-xl text-walnut mb-2">
-                    {p.name}
+                    <a href={p.href} className="hover:text-ochre transition-colors">{p.name}</a>
                   </h3>
                   <p className="text-sm text-ink-soft/70 leading-relaxed mb-4">
                     {p.desc}
