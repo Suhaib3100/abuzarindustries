@@ -61,4 +61,7 @@ export const rupees = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 // Towns we deliver to regularly (owner, 2026-11-09). Delivery is charged by distance.
 export const DELIVERY_TOWNS = ["Hiriyur", "Davanagere", "Hosapete", "Hubballi", "Chikkamagaluru"];
 
-export const YEARS = new Date().getFullYear() - BUSINESS.founded;
+// Years in business. Call it only in Server Components (src/app/page.tsx) and pass the number
+// down: pages are prerendered at build time, so a value worked out in the browser would differ
+// from the HTML once the calendar year changes and break hydration.
+export const yearsInBusiness = (now = new Date()) => now.getFullYear() - BUSINESS.founded;

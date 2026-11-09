@@ -9,6 +9,7 @@ import QuoteTool from "@/components/QuoteTool";
 import Faq from "@/components/Faq";
 import Contact from "@/components/Contact";
 import { FAQ_HOME } from "@/lib/content";
+import { yearsInBusiness } from "@/lib/business";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -21,7 +22,7 @@ export default function Home() {
       <Services />
       <Products />
       <Process />
-      <About />
+      <About years={yearsInBusiness()} />
       <GoogleReviews />
       <QuoteTool />
       <Faq items={FAQ_HOME} />

@@ -4,10 +4,11 @@ import { Shield, Users, Star, CalendarDays } from "lucide-react";
 import VideoFrame from "./VideoFrame";
 import { Reveal, Stagger, StaggerItem } from "./motion/Reveal";
 import { AnimatedCounter } from "./motion/Patterns";
-import { BUSINESS, GOOGLE, YEARS } from "@/lib/business";
+import { BUSINESS, GOOGLE } from "@/lib/business";
 
-const stats = [
-  { icon: Shield, to: YEARS, suffix: "+", label: "Years" },
+// `years` comes from the server (see yearsInBusiness) so the HTML and the browser agree.
+const statsFor = (years: number) => [
+  { icon: Shield, to: years, suffix: "+", label: "Years" },
   { icon: Users, to: BUSINESS.customers, suffix: "+", label: "Customers" },
   { icon: Star, to: GOOGLE.rating, suffix: "★", label: `Google (${GOOGLE.reviews} reviews)`, decimals: 1 },
   { icon: CalendarDays, to: 7, suffix: "", label: "Days open a week" },
@@ -20,7 +21,8 @@ const values = [
   "Delivery charged by distance",
 ];
 
-export default function About() {
+export default function About({ years }: { years: number }) {
+  const stats = statsFor(years);
   return (
     <section id="about" className="py-24 sm:py-32 relative">
       <div className="pointer-events-none absolute top-0 right-0 w-[30rem] h-[30rem] bg-walnut/4 rounded-full blur-3xl" />
