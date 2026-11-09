@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Trash2, Send, Calculator, RotateCcw } from "lucide-react";
 import VideoFrame from "./VideoFrame";
+import { PRICES, rupees } from "@/lib/business";
 
 interface Row {
   id: number;
@@ -17,6 +18,17 @@ const calcCft = (l: number, w: number, t: number, pcs: number) =>
   ((l * w * t * pcs) / 144).toFixed(2);
 
 const COMMON_WOODS = ["Teak Wood", "White Teak", "Neem Wood"];
+
+/** Published rate per CFT for the typed wood (teak at the A grade rate), or null when the
+ *  site publishes no rate for it: Burma teak is on order, other woods are priced on request. */
+function rateFor(wood: string): { rate: number; label: string } | null {
+  const w = wood.toLowerCase();
+  if (w.includes("white")) return { rate: PRICES.whiteTeak, label: "white teak" };
+  if (w.includes("neem")) return { rate: PRICES.neem, label: "neem" };
+  if (w.includes("burma")) return null;
+  if (w.includes("teak")) return { rate: PRICES.teakA, label: "teak, A grade" };
+  return null;
+}
 
 const PHONE = "919845378626";
 
@@ -62,7 +74,8 @@ export default function QuoteTool() {
     return s + l * w * t * p / 144;
   }, 0);
 
-  const estimate = Math.round(totalCft * 2600);
+  const rate = rateFor(woodType);
+  const estimate = rate ? Math.round(totalCft * rate.rate) : null;
 
   const buildMessage = useCallback(() => {
     let msg = `*Timber Quotation Request*\n`;
@@ -82,7 +95,7 @@ export default function QuoteTool() {
       }
     });
     msg += `\nTotal: ${totalCft.toFixed(2)} CFT`;
-    if (totalCft > 0 && woodType)
+    if (totalCft > 0 && estimate !== null)
       msg += ` | Est. ₹${estimate.toLocaleString("en-IN")}`;
     msg += `\n\nPlease share your best price. Thank you! 🙏`;
     return encodeURIComponent(msg);
@@ -386,17 +399,25 @@ export default function QuoteTool() {
                   <span className="text-xs text-ink-soft/60 font-semibold tracking-wider uppercase">
                     Est. Price*
                   </span>
-                  <motion.div
-                    key={`price-${estimate}`}
-                    initial={{ scale: 1 }}
-                    animate={{ scale: [1, 1.04, 1] }}
-                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                    className="font-[family:var(--font-display)] font-bold text-2xl text-ochre"
-                  >
-                    ₹{estimate.toLocaleString("en-IN")}
-                  </motion.div>
+                  {estimate !== null ? (
+                    <motion.div
+                      key={`price-${estimate}`}
+                      initial={{ scale: 1 }}
+                      animate={{ scale: [1, 1.04, 1] }}
+                      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                      className="font-[family:var(--font-display)] font-bold text-2xl text-ochre"
+                    >
+                      ₹{estimate.toLocaleString("en-IN")}
+                    </motion.div>
+                  ) : (
+                    <div className="font-[family:var(--font-display)] font-bold text-2xl text-ochre">—</div>
+                  )}
                   <span className="text-[10px] text-ink-soft/40">
-                    * ₹2,600/CFT estimate. Final price depends on wood type.
+                    {rate
+                      ? `* At about ${rupees(rate.rate)}/CFT (${rate.label}). Final price depends on grade and size.`
+                      : woodType.trim()
+                        ? "* Call us for the rate of this wood."
+                        : "* Choose a wood type to see an estimate."}
                   </span>
                 </div>
               )}

@@ -10,6 +10,7 @@ import {
   commitQuotationNo,
   rupeesInWords,
 } from "@/lib/quote";
+import { PRICES } from "@/lib/business";
 
 const PHONE = "919845378626";
 
@@ -41,10 +42,12 @@ const COLS: { key: keyof Row; label: string; sub: string }[] = [
   { key: "pcs", label: "Pcs", sub: "qty" },
 ];
 
+// Starting rate per CFT for each wood: the published prices in src/lib/business.ts
+// (teak at the A grade rate). The rate stays editable on every section.
 const WOOD_RATES: Record<string, number> = {
-  "Teak Wood": 4000,
-  "White Teak": 2800,
-  "Neem Wood": 1000,
+  "Teak Wood": PRICES.teakA,
+  "White Teak": PRICES.whiteTeak,
+  "Neem Wood": PRICES.neem,
 };
 const WOOD_CYCLE = ["Teak Wood", "White Teak", "Neem Wood"];
 
@@ -59,7 +62,7 @@ export default function CalculatorContent() {
   const newRow = (): Row => ({ id: nextId(), l: "", w: "", t: "", pcs: "" });
 
   const [sections, setSections] = useState<Section[]>([
-    { id: 1, wood: "Teak Wood", rate: "4000", rows: [newRow()] },
+    { id: 1, wood: "Teak Wood", rate: String(WOOD_RATES["Teak Wood"]), rows: [newRow()] },
   ]);
   const [quoteNo, setQuoteNo] = useState("");
   const [date, setDate] = useState("");
@@ -125,7 +128,7 @@ export default function CalculatorContent() {
     const wood = WOOD_CYCLE.find((w) => !used.includes(w)) ?? "Teak Wood";
     setSections((prev) => [
       ...prev,
-      { id: nextId(), wood, rate: String(WOOD_RATES[wood] ?? 4000), rows: [newRow()] },
+      { id: nextId(), wood, rate: String(WOOD_RATES[wood] ?? WOOD_RATES["Teak Wood"]), rows: [newRow()] },
     ]);
   };
 
