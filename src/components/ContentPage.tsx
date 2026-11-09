@@ -43,7 +43,10 @@ export default function ContentPage({
             <li key={c.path} className="flex items-center gap-1">
               {i > 0 && <ChevronRight size={12} aria-hidden />}
               {i < trail.length - 1 ? (
-                <a href={c.path} className="hover:text-ochre transition-colors">{c.name}</a>
+                // globals.css gives links a 44px minimum height and width on phones. inline-flex centres
+                // the text in that height (it sat ~14px above the chevrons); min-w-0! drops the width so
+                // "Home" has no gap after it (! is needed: that rule is unlayered, so it beats utilities).
+                <a href={c.path} className="inline-flex items-center min-w-0! hover:text-ochre transition-colors">{c.name}</a>
               ) : (
                 <span aria-current="page" className="text-ink-soft">{c.name}</span>
               )}
