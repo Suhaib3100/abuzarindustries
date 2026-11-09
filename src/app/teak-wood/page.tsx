@@ -3,36 +3,13 @@ import { pageMetadata } from "@/lib/seo";
 import ContentPage, { Section, Table, Related } from "@/components/ContentPage";
 import JsonLd from "@/components/JsonLd";
 import { BUSINESS, PRICES, SITE_URL, rupees } from "@/lib/business";
-import { FRAME_SIZES, TEAK_WEIGHT } from "@/lib/content";
+import { FRAME_SIZES, TEAK_GRADES, TEAK_TYPES, TEAK_WEIGHT } from "@/lib/content";
 
 export const metadata: Metadata = pageMetadata({
   title: "Teak Wood in Chitradurga: Ghana, Togo, Burma",
   description: `Ghana, Togo and African teak in stock, Burma teak on order. A grade about ${rupees(PRICES.teakA)}/CFT, B grade about ${rupees(PRICES.teakB)}/CFT. About 10% moisture, cut to any size.`,
   path: "/teak-wood",
 });
-
-const types = [
-  {
-    name: "Ghana teak",
-    stock: "In stock",
-    text: "Teak imported from Ghana in West Africa. Golden-brown wood with a clear grain, a popular choice for doors, frames and windows.",
-  },
-  {
-    name: "Togo teak",
-    stock: "In stock",
-    text: "Teak imported from Togo, next to Ghana. Similar look and use as Ghana teak; we keep both so you can match colour and size.",
-  },
-  {
-    name: "African teak",
-    stock: "In stock",
-    text: "Teak imported from other African countries. Good for frames and general woodwork where the budget matters.",
-  },
-  {
-    name: "Burma teak",
-    stock: "On order",
-    text: "Teak from Myanmar, long known as the benchmark for main doors. We do not keep it in the yard; tell us your sizes and we arrange it.",
-  },
-];
 
 export default function TeakWoodPage() {
   return (
@@ -85,7 +62,7 @@ export default function TeakWoodPage() {
 
       <Section title="Teak we sell">
         <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {types.map((t) => (
+          {TEAK_TYPES.map((t) => (
             <li key={t.name} className="card-premium rounded-2xl p-6">
               <div className="flex items-center justify-between gap-3">
                 <h3 className="font-[family:var(--font-serif)] font-semibold text-xl text-walnut">{t.name}</h3>
@@ -111,11 +88,12 @@ export default function TeakWoodPage() {
         <Table
           caption="Teak wood grades and price per CFT"
           head={["Grade", "Approx. price", "What it looks like", "Best for"]}
-          rows={[
-            ["A grade", `${rupees(PRICES.teakA)} / CFT`, "Straighter grain, fewer knots, even colour", "Main door, visible frames, furniture"],
-            ["B grade", `${rupees(PRICES.teakB)} / CFT`, "Some knots and colour change", "Inner frames, windows, hidden work"],
-            ["Burma teak", "On order, call", "Rich golden-brown, oily feel", "Premium main doors"],
-          ]}
+          rows={TEAK_GRADES.map((g) => [
+            g.grade,
+            g.price === null ? "On order, call" : `${rupees(g.price)} / CFT`,
+            g.looks,
+            g.bestFor,
+          ])}
         />
       </Section>
 

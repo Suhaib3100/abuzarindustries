@@ -44,6 +44,46 @@ export const TEAK_WEIGHT = {
 
 export const FRAME_SIZES = ['5" × 3"', '6" × 4"', '8" × 4"'];
 
+// Teak we sell: shown on /teak-wood and listed in llms-full.txt.
+export const TEAK_TYPES = [
+  {
+    name: "Ghana teak",
+    stock: "In stock",
+    text: "Teak imported from Ghana in West Africa. Golden-brown wood with a clear grain, a popular choice for doors, frames and windows.",
+  },
+  {
+    name: "Togo teak",
+    stock: "In stock",
+    text: "Teak imported from Togo, next to Ghana. Similar look and use as Ghana teak; we keep both so you can match colour and size.",
+  },
+  {
+    name: "African teak",
+    stock: "In stock",
+    text: "Teak imported from other African countries. Good for frames and general woodwork where the budget matters.",
+  },
+  {
+    name: "Burma teak",
+    stock: "On order",
+    text: "Teak from Myanmar, long known as the benchmark for main doors. We do not keep it in the yard; tell us your sizes and we arrange it.",
+  },
+];
+
+// Teak grades: shown on /teak-wood and in llms-full.txt. price null = on order, call for the rate.
+export const TEAK_GRADES: { grade: string; price: number | null; looks: string; bestFor: string }[] = [
+  { grade: "A grade", price: PRICES.teakA, looks: "Straighter grain, fewer knots, even colour", bestFor: "Main door, visible frames, furniture" },
+  { grade: "B grade", price: PRICES.teakB, looks: "Some knots and colour change", bestFor: "Inner frames, windows, hidden work" },
+  { grade: "Burma teak", price: null, looks: "Rich golden-brown, oily feel", bestFor: "Premium main doors" },
+];
+
+// Price list: shown on /teak-wood-price-per-cft and in llms-full.txt. price null = call for the rate.
+export const PRICE_LIST: { wood: string; price: number | null; stock: string }[] = [
+  { wood: "Teak, A grade", price: PRICES.teakA, stock: "Ghana, Togo, African teak in stock" },
+  { wood: "Teak, B grade", price: PRICES.teakB, stock: "In stock" },
+  { wood: "Burma teak", price: null, stock: "On order" },
+  { wood: "White teak", price: PRICES.whiteTeak, stock: "In stock" },
+  { wood: "Neem wood", price: PRICES.neem, stock: "In stock" },
+];
+
 const hoursText = HOURS.map((h) => `${h.label} ${h.time}`).join(", ");
 const towns = DELIVERY_TOWNS.join(", ");
 

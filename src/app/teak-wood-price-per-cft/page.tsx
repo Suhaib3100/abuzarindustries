@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
 import ContentPage, { Section, Table, Related } from "@/components/ContentPage";
 import { PRICES, rupees } from "@/lib/business";
+import { PRICE_LIST } from "@/lib/content";
 
 export const metadata: Metadata = pageMetadata({
   title: `Teak Wood Price per CFT (${PRICES.asOf})`,
@@ -30,13 +31,7 @@ export default function PricePage() {
         <Table
           caption="Approximate timber price per CFT"
           head={["Wood", "Approx. price per CFT", "Stock"]}
-          rows={[
-            ["Teak, A grade", rupees(PRICES.teakA), "Ghana, Togo, African teak in stock"],
-            ["Teak, B grade", rupees(PRICES.teakB), "In stock"],
-            ["Burma teak", "Call for rate", "On order"],
-            ["White teak", rupees(PRICES.whiteTeak), "In stock"],
-            ["Neem wood", rupees(PRICES.neem), "In stock"],
-          ]}
+          rows={PRICE_LIST.map((r) => [r.wood, r.price === null ? "Call for rate" : rupees(r.price), r.stock])}
         />
         <p className="text-xs text-ink-soft/60">
           Rates before delivery. Delivery is charged by distance. Final billing follows the measured pieces.

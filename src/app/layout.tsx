@@ -110,6 +110,8 @@ export default function RootLayout({
           .skip-link { position: fixed; top: -999px; left: 8px; z-index: 10000; padding: 12px 24px; background: #5A3D24; color: #FAF6EF; border-radius: 0 0 8px 8px; font-weight: 600; font-size: 14px; text-decoration: none; }
           .skip-link:focus { top: 0; }
         `}</style>
+        {/* llms.txt v2 discovery: the plain-text summary of the site for AI assistants */}
+        <link rel="describedby" href="/llms.txt" type="text/plain" />
       </head>
       <body className="min-h-dvh flex flex-col antialiased">
         <a href="#main-content" className="skip-link">Skip to main content</a>
