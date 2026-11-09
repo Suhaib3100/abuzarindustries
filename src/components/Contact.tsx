@@ -2,7 +2,7 @@
 
 import { MapPin, Phone, Mail, Clock, Send, ArrowUpRight } from "lucide-react";
 import { Reveal, Stagger, StaggerItem } from "./motion/Reveal";
-import { GOOGLE, HOURS_SHORT } from "@/lib/business";
+import { ADDRESS_LINE, GOOGLE, HOURS_SHORT } from "@/lib/business";
 
 const PHONE = "+919845378626";
 
@@ -180,7 +180,7 @@ export default function Contact() {
             />
           </div>
           <p className="mt-2 text-xs text-center text-ink-soft/40">
-            KSSIDC Industrial Area, DVG Road, Chitradurga, Karnataka 577501
+            {ADDRESS_LINE}
           </p>
         </Reveal>
       </div>

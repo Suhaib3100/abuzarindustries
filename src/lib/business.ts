@@ -1,5 +1,6 @@
 // One place for business facts, so every page, the footer and the schema say the same thing.
-// Confirmed by the owner on 2026-11-09. Change a fact here, not in the pages.
+// Confirmed by the owner on 2026-11-09, except the opening hours and PIN, which follow the
+// Google Business Profile (checked 2026-11-09): keep the two in step. Change a fact here, not in the pages.
 
 export const SITE_URL = "https://www.abuzarindustries.in";
 
@@ -12,7 +13,7 @@ export const BUSINESS = {
   street: "Plot No 14, KSSIDC Industrial Area, DVG Road",
   city: "Chitradurga",
   region: "Karnataka",
-  postalCode: "577501",
+  postalCode: "577502",
   landmark: "Near Traffic Police Station, under 1 km from the KSRTC bus stand",
   geo: { lat: 14.2304243, lng: 76.3906535 },
   founded: 1995,
@@ -24,9 +25,8 @@ export const BUSINESS = {
 export const ADDRESS_LINE = `${BUSINESS.street}, ${BUSINESS.city}, ${BUSINESS.region} ${BUSINESS.postalCode}`;
 
 export const HOURS = [
-  { label: "Monday – Saturday", short: "Mon–Sat", time: "9:30 AM – 7:00 PM", opens: "09:30", closes: "19:00",
-    days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"] },
-  { label: "Sunday", short: "Sun", time: "10:00 AM – 4:00 PM", opens: "10:00", closes: "16:00", days: ["Sunday"] },
+  { label: "Monday – Sunday", short: "Mon–Sun", time: "9:30 AM – 6:00 PM", opens: "09:30", closes: "18:00",
+    days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] },
 ];
 
 export const HOURS_SHORT = HOURS.map((h) => `${h.short} ${h.time.replace(/:00/g, "").replace(/ /g, "")}`).join(" · ");
