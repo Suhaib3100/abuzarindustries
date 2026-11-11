@@ -4,27 +4,31 @@ import Image from "next/image";
 import { Trees, Ruler, Building2, Truck, ClipboardList, Leaf, Move3d } from "lucide-react";
 import { Reveal, Stagger, StaggerItem } from "./motion/Reveal";
 import DeliveryMap from "./DeliveryMap";
+import { PRICES, rupees } from "@/lib/business";
 
 const services = [
   {
     icon: Trees,
     n: "01",
     title: "Premium Teak Wood",
-    desc: "Ghana, Togo & Burma teak from ₹4,000/cu.ft. Kiln-dried, ready for joinery and fine furniture.",
+    desc: `Ghana, Togo and African teak from ${rupees(PRICES.teakB)}/CFT, Burma on order. Dried to about 10% moisture.`,
+    href: "/teak-wood",
     img: "/images/teak-product.jpg",
   },
   {
     icon: Leaf,
     n: "02",
     title: "White Teak Wood",
-    desc: "Quality white teak from ₹2,800/cu.ft. Ideal for doors, windows and interior woodwork.",
+    desc: `White teak at about ${rupees(PRICES.whiteTeak)}/CFT. A lower-cost choice for inner doors, windows and interior work.`,
+    href: "/white-teak-wood",
     img: "/images/white-teak-product.jpg",
   },
   {
     icon: Building2,
     n: "03",
     title: "Neem Wood",
-    desc: "Durable, pest-resistant neem from ₹1,000/cu.ft. Naturally repels termites — perfect for outdoor furniture and farm construction.",
+    desc: `Neem at about ${rupees(PRICES.neem)}/CFT. Hard wood that insects tend to avoid, for outdoor furniture and farm buildings.`,
+    href: "/neem-wood",
     img: "/images/neem-product.jpg",
   },
   {
@@ -37,8 +41,9 @@ const services = [
   {
     icon: Truck,
     n: "05",
-    title: "Delivery Across Karnataka",
-    desc: "From our KSSIDC yard in Chitradurga straight to your site — reliable, on time, and fully loaded.",
+    title: "Delivery to Your Site",
+    desc: "Pick your wood at the yard and the truck leaves with you. Charged by distance.",
+    href: "/delivery",
     img: null,
     isMap: true,
   },
@@ -62,10 +67,10 @@ export default function Services() {
             <span className="eyebrow text-ochre">What We Offer</span>
           </div>
           <h2 className="t-h2 text-walnut">
-            Build with the <span className="gold-text italic">best</span> wood in Karnataka
+            The <span className="gold-text italic">right</span> wood for every part of your house
           </h2>
           <p className="mt-4 text-ink-soft/80 text-sm sm:text-base leading-relaxed max-w-xl">
-            Premium teak, white teak and neem — custom cut, graded and delivered from our Chitradurga yard. One call gets you a quote and a load date.
+            Teak, white teak and neem — graded, cut to size and loaded at our Chitradurga yard. One call gets you a quote and a load date.
           </p>
         </Reveal>
 
@@ -109,7 +114,11 @@ export default function Services() {
                   </div>
 
                   <h3 className="font-[family:var(--font-serif)] font-semibold text-[17px] text-walnut mb-1.5">
-                    {s.title}
+                    {s.href ? (
+                      <a href={s.href} className="hover:text-ochre transition-colors">{s.title}</a>
+                    ) : (
+                      s.title
+                    )}
                   </h3>
                   <p className="text-sm text-ink-soft/80 leading-relaxed flex-1">{s.desc}</p>
 

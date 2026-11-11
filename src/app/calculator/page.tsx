@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import CalculatorContent from "./CalculatorContent";
 
-export const metadata: Metadata = {
-  title: "Timber Price Calculator | Instant Quotes | Abuzar Industries Chitradurga",
+export const metadata: Metadata = pageMetadata({
+  title: "Timber CFT Calculator: Teak, White Teak and Neem",
   description:
-    "Calculate timber costs instantly with our professional calculator. Teak, white teak & neem wood in Chitradurga, Karnataka. Get accurate CFT calculations and send quotes via WhatsApp from KSSIDC Industrial Area yard.",
-  alternates: { canonical: "https://abuzarindustries.in/calculator" },
-};
+    "Work out timber CFT (length ft × width in × thickness in ÷ 144) for many pieces, see an estimated price and send the list to us.",
+  path: "/calculator",
+});
 
 export default function CalculatorPage() {
   return <CalculatorContent />;

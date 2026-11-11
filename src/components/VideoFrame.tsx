@@ -22,30 +22,51 @@ export default function VideoFrame({
 }) {
   const ref = useRef<HTMLVideoElement>(null);
   const [ready, setReady] = useState(false);
+  // Don't download the clip until it is near the screen (~2.5 MB each).
+  const [near, setNear] = useState(false);
 
   useEffect(() => {
     const v = ref.current;
     if (!v) return;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          setNear(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "300px" },
+    );
+    io.observe(v);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const v = ref.current;
+    if (!v || !near) return;
     v.playbackRate = rate;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       v.pause();
       return;
     }
     v.play().catch(() => {});
-  }, [rate]);
+  }, [rate, near]);
 
   return (
     <div className={`relative overflow-hidden ${className}`}>
+      {/* Poster stays visible underneath until the clip can play (the video is hidden until then). */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={poster} alt="" aria-hidden loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
       <video
         ref={ref}
-        className={`h-full w-full object-cover transition-opacity duration-700 ${ready ? "opacity-100" : "opacity-0"}`}
-        src={src}
+        className={`relative h-full w-full object-cover transition-opacity duration-700 ${ready ? "opacity-100" : "opacity-0"}`}
+        src={near ? src : undefined}
         poster={poster}
         autoPlay
         muted
         loop
         playsInline
-        preload="metadata"
+        preload="none"
         onCanPlay={(e) => {
           e.currentTarget.playbackRate = rate;
           setReady(true);

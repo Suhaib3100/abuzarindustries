@@ -2,6 +2,7 @@
 
 import { MapPin, Phone, Mail, Clock, Send, ArrowUpRight } from "lucide-react";
 import { Reveal, Stagger, StaggerItem } from "./motion/Reveal";
+import { ADDRESS_LINE, GOOGLE, HOURS_SHORT } from "@/lib/business";
 
 const PHONE = "+919845378626";
 
@@ -15,13 +16,13 @@ const REVIEW_QR_SRC =
 const contacts = [
   { icon: Phone, label: "Call Us", value: "+91 98453 78626", href: "tel:+919845378626" },
   { icon: Mail, label: "Email", value: "abuzarindustries@gmail.com", href: "mailto:abuzarindustries@gmail.com" },
-  { icon: MapPin, label: "Our Yard", value: "KSSIDC Industrial Area, DVG Road, Chitradurga · Mon–Sat 9AM–7PM", href: "https://maps.google.com/?q=14.2264826,76.3863472" },
+  { icon: MapPin, label: "Our Yard", value: `KSSIDC Industrial Area, DVG Road, Chitradurga · ${HOURS_SHORT}`, href: GOOGLE.mapsUrl },
   { icon: Clock, label: "WhatsApp", value: "Quick replies within minutes", href: `https://wa.me/919845378626` },
 ];
 
 export default function Contact() {
   return (
-    <section id="contact" className="py-24 sm:py-32 relative">
+    <section id="contact" className="py-24 sm:py-32 relative overflow-hidden">
       <div className="pointer-events-none absolute bottom-0 left-0 w-[26rem] h-[26rem] bg-ochre/6 rounded-full blur-3xl" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -179,7 +180,7 @@ export default function Contact() {
             />
           </div>
           <p className="mt-2 text-xs text-center text-ink-soft/40">
-            KSSIDC Industrial Area, DVG Road, Chitradurga, Karnataka 577501
+            {ADDRESS_LINE}
           </p>
         </Reveal>
       </div>

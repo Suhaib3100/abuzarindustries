@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Shield, Truck, BadgeCheck } from "lucide-react";
+import { Shield, Clock, BadgeCheck } from "lucide-react";
 import HeroVideo from "./HeroVideo";
 import { WordReveal, ShineWrap } from "./motion/Patterns";
 
@@ -18,7 +18,7 @@ const fadeUp = {
 
 const stamps = [
   { icon: Shield, label: "Trusted Since 1995" },
-  { icon: Truck, label: "Across Karnataka" },
+  { icon: Clock, label: "Open 7 Days" },
   { icon: BadgeCheck, label: "Custom Cut Sizes" },
 ];
 
@@ -54,11 +54,11 @@ export default function Hero() {
               className="inline-flex items-center gap-3 mb-7"
             >
               <span className="rule-gold hidden sm:block" />
-              <span className="eyebrow text-ochre">Chitradurga&apos;s Timber House</span>
+              <span className="eyebrow text-ochre">Teak wood supplier · Chitradurga, Karnataka</span>
             </motion.div>
 
             <h1 className="t-display text-walnut">
-              <WordReveal text="Premium Timber," />
+              <WordReveal text="Premium Teak Wood," />
               <br />
               <span className="gold-text italic font-[500]">
                 <WordReveal text="Cut Your Way" />
@@ -72,9 +72,9 @@ export default function Hero() {
               custom={2}
               className="mt-7 max-w-lg mx-auto lg:mx-0 text-base sm:text-[17px] text-ink-soft/85 leading-relaxed"
             >
-              Imported teak, white teak and neem — seasoned, graded and cut to
-              your exact specification. Three generations of timber craft since
-              1995.
+              Ghana, Togo and African teak (Burma on order), white teak and neem —
+              graded and cut to your exact size. Our teak is dried to about 10%
+              moisture. Three generations of timber craft since 1995.
             </motion.p>
 
             <motion.div

@@ -1,4 +1,5 @@
-import { Phone, Mail, MapPin, ArrowUpRight } from "lucide-react";
+import { Phone, Mail, MapPin, ArrowUpRight, Clock } from "lucide-react";
+import { BUSINESS, HOURS } from "@/lib/business";
 
 const year = new Date().getFullYear();
 
@@ -26,7 +27,7 @@ export default function Footer() {
               </div>
             </div>
             <p className="text-sm leading-relaxed text-paper/55 max-w-xs">
-              Premium teak, white teak and neem — custom cut and delivered across Karnataka for three generations.
+              Teak, white teak and neem wood, cut to any size at our Chitradurga yard for three generations.
             </p>
           </div>
 
@@ -35,8 +36,12 @@ export default function Footer() {
             <span className="block eyebrow text-paper/45 mb-5">Links</span>
             <ul className="space-y-3">
               {[
-                { href: "/products", label: "Our Products" },
-                { href: "/calculator", label: "Price Calculator" },
+                { href: "/teak-wood", label: "Teak Wood" },
+                { href: "/teak-wood-for-doors-and-frames", label: "Doors and Frames" },
+                { href: "/teak-wood-price-per-cft", label: "Price per CFT" },
+                { href: "/products", label: "All Products" },
+                { href: "/calculator", label: "CFT Calculator" },
+                { href: "/delivery", label: "Delivery" },
                 { href: "/about", label: "About Us" },
                 { href: "/contact", label: "Contact" },
               ].map((l) => (
@@ -57,9 +62,9 @@ export default function Footer() {
               <li className="flex items-start gap-3 text-paper/65">
                 <MapPin size={15} className="mt-0.5 shrink-0 text-ochre" strokeWidth={1.75} />
                 <span>
-                  KSSIDC Industrial Area, DVG Road<br />
-                  Chitradurga, Karnataka — 577501<br />
-                  <span className="text-[11px] text-paper/35">Near Chitradurga Fort — 2 km from bus stand</span>
+                  {BUSINESS.street}<br />
+                  {BUSINESS.city}, {BUSINESS.region} — {BUSINESS.postalCode}<br />
+                  <span className="text-[11px] text-paper/50">{BUSINESS.landmark}</span>
                 </span>
               </li>
               <li>
@@ -67,6 +72,14 @@ export default function Footer() {
                   <Phone size={15} className="shrink-0 text-ochre" strokeWidth={1.75} />
                   +91 98453 78626
                 </a>
+              </li>
+              <li className="flex items-start gap-3 text-paper/65">
+                <Clock size={15} className="mt-0.5 shrink-0 text-ochre" strokeWidth={1.75} />
+                <span>
+                  {HOURS.map((h) => (
+                    <span key={h.label} className="block">{h.label}: {h.time}</span>
+                  ))}
+                </span>
               </li>
               <li>
                 <a href="mailto:abuzarindustries@gmail.com" className="inline-flex items-center gap-3 text-paper/65 hover:text-ochre transition-colors duration-300">

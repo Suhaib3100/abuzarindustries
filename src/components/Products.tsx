@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { Ruler, Building2, Truck, BadgeIndianRupee, Box, ImageIcon, ArrowUpRight } from "lucide-react";
 import { Reveal, Stagger, StaggerItem } from "./motion/Reveal";
 import VideoFrame from "./VideoFrame";
+import { PRICES, rupees } from "@/lib/business";
 
 const PlankViewer = dynamic(() => import("@/components/three/PlankViewer"), {
   ssr: false,
@@ -29,11 +30,11 @@ const products = [
     image: "/images/teak-product.jpg",
     video: "/videos/plank-teak.mp4",
     poster: "/plank-teak-poster.jpg",
-    specs: "Ghana · Togo · Burma",
-    price: "₹4,000",
+    specs: "Ghana · Togo · African",
+    price: rupees(PRICES.teakB),
     dims: { l: 96, w: 8, t: 2 },
     species: "Teak Wood",
-    desc: "Imported, kiln-dried teak — the benchmark for doors, joinery and fine furniture.",
+    desc: "Ghana, Togo and African teak, dried to about 10% moisture. Burma teak on order.",
     tag: "Best Seller",
   },
   {
@@ -42,7 +43,7 @@ const products = [
     video: "/videos/plank-white-teak.mp4",
     poster: "/plank-white-teak-poster.jpg",
     specs: "Doors · Windows · Frames",
-    price: "₹2,800",
+    price: rupees(PRICES.whiteTeak),
     dims: { l: 96, w: 6, t: 2 },
     species: "White Teak",
     desc: "Pale, workable and clean-grained — a value choice for interior woodwork.",
@@ -54,10 +55,10 @@ const products = [
     video: null as string | null,
     poster: null as string | null,
     specs: "Outdoor · Durable",
-    price: "₹1,000",
+    price: rupees(PRICES.neem),
     dims: { l: 72, w: 6, t: 2 },
     species: "Neem Wood",
-    desc: "Naturally pest-resistant timber, ideal for outdoor furniture and general build.",
+    desc: "Hard wood that insects tend to avoid, for outdoor furniture and general build.",
     tag: "Value",
   },
 ];
@@ -85,7 +86,7 @@ export default function Products() {
             Three species, <span className="gold-text italic">one standard</span>
           </h2>
           <p className="mt-4 text-ink-soft/80 text-sm sm:text-base leading-relaxed max-w-xl">
-            The finest teak, white teak and neem wood in Chitradurga — seasoned at our KSSIDC yard and delivered across Karnataka.
+            Teak, white teak and neem wood, dried at our KSSIDC yard in Chitradurga and cut to your size.
           </p>
         </Reveal>
 
@@ -120,7 +121,7 @@ export default function Products() {
                       <span className="block text-[10px] uppercase tracking-widest text-paper/70">From</span>
                       <span className="font-[family:var(--font-serif)] font-semibold text-2xl leading-none">
                         {p.price}
-                        <span className="text-xs font-normal text-paper/70"> /cu.ft</span>
+                        <span className="text-xs font-normal text-paper/70"> /CFT</span>
                       </span>
                     </div>
                     <button

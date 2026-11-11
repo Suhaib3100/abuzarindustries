@@ -5,6 +5,9 @@ import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import Preloader from "@/components/Preloader";
 import { ScrollProgress } from "@/components/motion/Patterns";
+import JsonLd from "@/components/JsonLd";
+import { BUSINESS, GOOGLE, HOURS, SAME_AS, SITE_URL } from "@/lib/business";
+import { HOME_OG, openGraph } from "@/lib/seo";
 
 const display = Saira_Condensed({
   variable: "--font-display",
@@ -32,39 +35,64 @@ const mono = Spline_Sans_Mono({
   weight: ["400", "500", "600"],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://abuzarindustries.in"),
-  title: "Best Teak Wood Supplier in Chitradurga, Karnataka | Abuzar Industries",
+
+const BUSINESS_LD = {
+  "@context": "https://schema.org",
+  "@type": "Store",
+  "@id": `${SITE_URL}/#business`,
+  name: BUSINESS.name,
+  url: SITE_URL,
+  telephone: BUSINESS.phone,
+  email: BUSINESS.email,
   description:
-    "Looking for teak wood in Chitradurga? Abuzar Industries is the most trusted timber supplier in Chitradurga, Karnataka since 1995. Premium teak, white teak & neem wood planks — custom cut sizes, instant WhatsApp quotes, free delivery across Karnataka. Visit our KSSIDC Industrial Area yard.",
-  keywords: [
-    "teak wood Chitradurga",
-    "timber supplier Chitradurga",
-    "teak wood planks",
-    "white teak",
-    "neem wood",
-    "custom cut timber",
-    "wood supplier Karnataka",
-    "Abuzar Industries",
-    "timber near me",
-    "wood shop Chitradurga",
-    "teak wood price Chitradurga",
-    "construction wood Karnataka",
-    "timber yard Chitradurga",
-    "teak wood supplier Karnataka",
-    "KSSIDC Industrial Area Chitradurga",
-  ],
-  alternates: { canonical: "https://abuzarindustries.in" },
-  openGraph: {
-    title: "Abuzar Industries — Best Teak Wood Supplier in Chitradurga",
-    description:
-      "Premium teak, white teak & neem wood since 1995. Custom cut sizes and delivery across Karnataka.",
-    url: "https://abuzarindustries.in",
-    siteName: "Abuzar Industries",
-    type: "website",
-    locale: "en_IN",
-    images: [{ url: "/images/logo-brand-og.png", width: 1200, height: 1200, alt: "Abuzar Industries" }],
+    "Teak wood (Ghana, Togo, African; Burma on order), white teak and neem wood supplier in Chitradurga since 1995. Cut to any size; delivery charged by distance.",
+  image: `${SITE_URL}/images/logo-brand-og.png`,
+  logo: `${SITE_URL}/images/logo-brand-512.png`,
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: BUSINESS.street,
+    addressLocality: BUSINESS.city,
+    addressRegion: BUSINESS.region,
+    postalCode: BUSINESS.postalCode,
+    addressCountry: "IN",
   },
+  geo: { "@type": "GeoCoordinates", latitude: BUSINESS.geo.lat, longitude: BUSINESS.geo.lng },
+  hasMap: GOOGLE.mapsUrl,
+  openingHoursSpecification: HOURS.map((h) => ({
+    "@type": "OpeningHoursSpecification",
+    dayOfWeek: h.days,
+    opens: h.opens,
+    closes: h.closes,
+  })),
+  areaServed: [
+    { "@type": "City", name: "Chitradurga" },
+    { "@type": "State", name: "Karnataka" },
+  ],
+  foundingDate: String(BUSINESS.founded),
+  founder: { "@type": "Person", name: BUSINESS.founder },
+  priceRange: "₹₹",
+  sameAs: SAME_AS,
+};
+
+const WEBSITE_LD = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: BUSINESS.name,
+  url: SITE_URL,
+  publisher: { "@id": `${SITE_URL}/#business` },
+};
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Teak Wood Supplier in Chitradurga, Karnataka | Abuzar Industries",
+    template: "%s | Abuzar Industries",
+  },
+  description:
+    "Ghana, Togo and African teak (Burma on order), white teak and neem in Chitradurga since 1995. Teak dried to about 10% moisture; all wood cut to any size.",
+  // Fallback for routes without their own (e.g. 404). Pages set theirs with pageMetadata().
+  openGraph: openGraph(HOME_OG.title, HOME_OG.description),
+  twitter: { card: "summary" },
 };
 
 export default function RootLayout({
@@ -82,85 +110,13 @@ export default function RootLayout({
           .skip-link { position: fixed; top: -999px; left: 8px; z-index: 10000; padding: 12px 24px; background: #5A3D24; color: #FAF6EF; border-radius: 0 0 8px 8px; font-weight: 600; font-size: 14px; text-decoration: none; }
           .skip-link:focus { top: 0; }
         `}</style>
+        {/* llms.txt v2 discovery: the plain-text summary of the site for AI assistants */}
+        <link rel="describedby" href="/llms.txt" type="text/plain" />
       </head>
       <body className="min-h-dvh flex flex-col antialiased">
         <a href="#main-content" className="skip-link">Skip to main content</a>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Store",
-              name: "Abuzar Industries",
-              url: "https://abuzarindustries.in",
-              telephone: "+919845378626",
-              email: "abuzarindustries@gmail.com",
-              description:
-                "Premium teak, white teak and neem wood supplier in Chitradurga since 1995. Custom cut sizes and delivery across Karnataka.",
-              image: "https://abuzarindustries.in/images/logo-brand-og.png",
-              address: {
-                "@type": "PostalAddress",
-                streetAddress: "KSSIDC Industrial Area, DVG Road",
-                addressLocality: "Chitradurga",
-                addressRegion: "Karnataka",
-                postalCode: "577501",
-                addressCountry: "IN",
-              },
-              geo: {
-                "@type": "GeoCoordinates",
-                latitude: 14.22648,
-                longitude: 76.38635,
-              },
-              openingHoursSpecification: [
-                { "@type": "OpeningHoursSpecification", dayOfWeek: "Monday", opens: "09:00", closes: "19:00" },
-                { "@type": "OpeningHoursSpecification", dayOfWeek: "Tuesday", opens: "09:00", closes: "19:00" },
-                { "@type": "OpeningHoursSpecification", dayOfWeek: "Wednesday", opens: "09:00", closes: "19:00" },
-                { "@type": "OpeningHoursSpecification", dayOfWeek: "Thursday", opens: "09:00", closes: "19:00" },
-                { "@type": "OpeningHoursSpecification", dayOfWeek: "Friday", opens: "09:00", closes: "19:00" },
-                { "@type": "OpeningHoursSpecification", dayOfWeek: "Saturday", opens: "09:00", closes: "19:00" },
-              ],
-              areaServed: [
-                { "@type": "State", name: "Karnataka" },
-                { "@type": "City", name: "Chitradurga" },
-              ],
-              foundingDate: "1995",
-              founder: { "@type": "Person", name: "Athaulla Afroz" },
-              priceRange: "₹₹",
-              sameAs: [
-                "https://wa.me/919845378626",
-              ],
-            }),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              name: "Abuzar Industries",
-              url: "https://abuzarindustries.in",
-              description:
-                "Timber and wood supplier in Chitradurga, Karnataka — premium teak, white teak, and neem wood.",
-            }),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "BreadcrumbList",
-              itemListElement: [
-                { "@type": "ListItem", position: 1, name: "Home", item: "https://abuzarindustries.in" },
-                { "@type": "ListItem", position: 2, name: "Products", item: "https://abuzarindustries.in/products" },
-                { "@type": "ListItem", position: 3, name: "Calculator", item: "https://abuzarindustries.in/calculator" },
-                { "@type": "ListItem", position: 4, name: "About", item: "https://abuzarindustries.in/about" },
-                { "@type": "ListItem", position: 5, name: "Contact", item: "https://abuzarindustries.in/contact" },
-              ],
-            }),
-          }}
-        />
+        <JsonLd data={BUSINESS_LD} />
+        <JsonLd data={WEBSITE_LD} />
         <ScrollProgress />
         <Preloader />
         <Nav />

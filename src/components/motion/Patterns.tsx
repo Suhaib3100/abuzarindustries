@@ -19,34 +19,40 @@ export function ScrollProgress() {
 }
 
 /* ── 2. Animated counter ── */
+// Server HTML holds the real number (search engines and AI readers don't run JS).
+// In the browser it counts up from `from` once scrolled into view.
 export function AnimatedCounter({
   from = 0,
   to,
   suffix = "",
+  decimals = 0,
   className,
 }: {
   from?: number;
   to: number;
   suffix?: string;
+  decimals?: number;
   className?: string;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-40px" });
-  const [display, setDisplay] = useState(from);
+  const [display, setDisplay] = useState(to);
+  const fmt = (v: number) =>
+    v.toLocaleString("en-IN", { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
 
   useEffect(() => {
-    if (!inView) return;
+    if (!inView || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const ctrl = animate(from, to, {
       duration: 1.8,
       ease: [0.22, 1, 0.36, 1],
-      onUpdate: (v) => setDisplay(Math.round(v)),
+      onUpdate: (v) => setDisplay(v),
     });
     return () => ctrl.stop();
   }, [inView, from, to]);
 
   return (
     <span ref={ref} className={className}>
-      {display}
+      {fmt(display)}
       {suffix}
     </span>
   );
