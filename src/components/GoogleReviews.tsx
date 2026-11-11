@@ -2,12 +2,21 @@ import { Star, ArrowUpRight } from "lucide-react";
 import { GOOGLE } from "@/lib/business";
 import { REVIEWS } from "@/lib/content";
 
-function Stars({ size = 14 }: { size?: number }) {
-  return (
-    <span className="flex gap-0.5 text-ochre" aria-label="5 out of 5 stars">
+// Filled stars cover `value` out of 5 (4.8 fills 96% of the row); faint stars show the rest.
+function Stars({ value = 5, size = 14 }: { value?: number; size?: number }) {
+  const row = (cls: string) => (
+    <span className={`flex gap-0.5 ${cls}`}>
       {Array.from({ length: 5 }, (_, i) => (
-        <Star key={i} size={size} fill="currentColor" strokeWidth={0} aria-hidden />
+        <Star key={i} size={size} fill="currentColor" strokeWidth={0} className="shrink-0" aria-hidden />
       ))}
+    </span>
+  );
+  return (
+    <span role="img" aria-label={`${value} out of 5 stars`} className="relative inline-flex">
+      {row("text-ochre/25")}
+      <span className="absolute inset-y-0 left-0 overflow-hidden" style={{ width: `${(value / 5) * 100}%` }}>
+        {row("text-ochre")}
+      </span>
     </span>
   );
 }
@@ -34,7 +43,7 @@ export default function GoogleReviews() {
           >
             <span className="font-[family:var(--font-serif)] font-semibold text-3xl text-walnut">{GOOGLE.rating}</span>
             <span>
-              <Stars />
+              <Stars value={GOOGLE.rating} />
               <span className="mt-1 flex items-center gap-1 text-xs text-ink-soft/70">
                 {GOOGLE.reviews} reviews on Google <ArrowUpRight size={12} />
               </span>

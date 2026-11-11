@@ -54,9 +54,12 @@ export default function VideoFrame({
 
   return (
     <div className={`relative overflow-hidden ${className}`}>
+      {/* Poster stays visible underneath until the clip can play (the video is hidden until then). */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={poster} alt="" aria-hidden loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
       <video
         ref={ref}
-        className={`h-full w-full object-cover transition-opacity duration-700 ${ready ? "opacity-100" : "opacity-0"}`}
+        className={`relative h-full w-full object-cover transition-opacity duration-700 ${ready ? "opacity-100" : "opacity-0"}`}
         src={near ? src : undefined}
         poster={poster}
         autoPlay

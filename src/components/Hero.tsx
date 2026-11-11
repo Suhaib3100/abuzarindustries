@@ -73,8 +73,8 @@ export default function Hero() {
               className="mt-7 max-w-lg mx-auto lg:mx-0 text-base sm:text-[17px] text-ink-soft/85 leading-relaxed"
             >
               Ghana, Togo and African teak (Burma on order), white teak and neem —
-              dried to about 10% moisture, graded and cut to your exact size.
-              Three generations of timber craft since 1995.
+              graded and cut to your exact size. Our teak is dried to about 10%
+              moisture. Three generations of timber craft since 1995.
             </motion.p>
 
             <motion.div

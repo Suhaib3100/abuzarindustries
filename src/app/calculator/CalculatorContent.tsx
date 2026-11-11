@@ -62,7 +62,8 @@ export default function CalculatorContent() {
   const newRow = (): Row => ({ id: nextId(), l: "", w: "", t: "", pcs: "" });
 
   const [sections, setSections] = useState<Section[]>([
-    { id: 1, wood: "Teak Wood", rate: String(WOOD_RATES["Teak Wood"]), rows: [newRow()] },
+    // Literal first row: newRow() reads idRef, which must not happen during render. nextId() starts at 11.
+    { id: 1, wood: "Teak Wood", rate: String(WOOD_RATES["Teak Wood"]), rows: [{ id: 1, l: "", w: "", t: "", pcs: "" }] },
   ]);
   const [quoteNo, setQuoteNo] = useState("");
   const [date, setDate] = useState("");
