@@ -17,9 +17,16 @@ export interface LeadSection {
   rows: { l: number; w: number; t: number; pcs: number }[];
 }
 
-/** Cut Size's public endpoint. Override per environment with NEXT_PUBLIC_LEAD_API_URL. */
-export const LEAD_API =
-  process.env.NEXT_PUBLIC_LEAD_API_URL || "https://safa-unofficial.vercel.app/api/website-lead";
+/**
+ * Live capture (what visitors type, even without Send) needs Cut Size's /api/website-lead.
+ * It is OFF until NEXT_PUBLIC_LEAD_API_URL is set to that endpoint on the live Cut Size app.
+ */
+export const LEAD_API = process.env.NEXT_PUBLIC_LEAD_API_URL || "";
+export const LIVE_LEADS = LEAD_API !== "";
+
+/** Live Cut Size → Website Quotations ("Send to us" while live capture is off). */
+export const QUOTE_API =
+  process.env.NEXT_PUBLIC_QUOTE_API_URL || "https://safa-unofficial.vercel.app/api/quotation-from-site";
 
 // The same rules the Cut Size endpoint applies (packages/core/src/lib/website-leads.ts there).
 
@@ -126,6 +133,7 @@ export interface LeadPayload extends LeadContact {
 const TEXT = "text/plain;charset=UTF-8";
 
 export async function postLead(p: LeadPayload): Promise<{ ok: boolean; error?: string }> {
+  if (!LIVE_LEADS) return { ok: false, error: "Live capture is off" };
   try {
     const res = await fetch(LEAD_API, {
       method: "POST",
@@ -143,10 +151,35 @@ export async function postLead(p: LeadPayload): Promise<{ ok: boolean; error?: s
 
 /** Last-chance send when the page is being closed or hidden. */
 export function beaconLead(p: LeadPayload): boolean {
+  if (!LIVE_LEADS) return false;
   try {
     if (typeof navigator === "undefined" || !navigator.sendBeacon) return false;
     return navigator.sendBeacon(LEAD_API, new Blob([JSON.stringify(p)], { type: TEXT }));
   } catch {
     return false;
+  }
+}
+
+/** "Send to us" into the live Cut Size → Website Quotations (the format it already accepts). */
+export async function sendQuote(c: LeadContact, sections: LeadSection[], hp = ""): Promise<{ ok: boolean; error?: string }> {
+  const secs = sections
+    .map((s) => ({
+      woodType: s.wood.trim() || "Wood",
+      rate: s.rate || 0,
+      rows: s.rows.filter((r) => r.l > 0 && r.w > 0 && r.t > 0).map((r) => ({ ...r, pcs: Math.max(1, r.pcs || 1) })),
+    }))
+    .filter((s) => s.rows.length);
+  if (!secs.length) return { ok: false, error: "Enter at least one full L × W × T line." };
+  try {
+    const res = await fetch(QUOTE_API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: c.name, phone: "+91 " + phoneDisplay(c.phone), sections: secs, website: hp }),
+    });
+    if (res.ok) return { ok: true };
+    const body = (await res.json().catch(() => null)) as { error?: string } | null;
+    return { ok: false, error: body?.error || "Could not send" };
+  } catch {
+    return { ok: false, error: "No connection" };
   }
 }

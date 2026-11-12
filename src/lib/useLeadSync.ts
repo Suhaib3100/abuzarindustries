@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore
 import {
   beaconLead,
   CONTACT_KEY,
+  LIVE_LEADS,
   forgetSession,
   newLeadId,
   parseContact,
@@ -12,6 +13,7 @@ import {
   readStorage,
   rememberContact,
   rememberSession,
+  sendQuote,
   sessionKey,
   type LeadContact,
   type LeadPage,
@@ -70,9 +72,9 @@ export function useLeadSync(page: LeadPage, sections: LeadSection[]) {
     return leadIdRef.current;
   }, [restored]);
 
-  // Live updates while they type.
+  // Live updates while they type (only when live capture is on).
   useEffect(() => {
-    if (!contact) return;
+    if (!contact || !LIVE_LEADS) return;
     const sig = signature(contact, sections);
     if (sig === lastSentRef.current) {
       pendingRef.current = null;
@@ -92,6 +94,7 @@ export function useLeadSync(page: LeadPage, sections: LeadSection[]) {
 
   // Leaving the page: send whatever has not gone yet.
   useEffect(() => {
+    if (!LIVE_LEADS) return;
     const flush = () => {
       const p = pendingRef.current;
       if (!p || p.sig === lastSentRef.current) return;
@@ -118,6 +121,7 @@ export function useLeadSync(page: LeadPage, sections: LeadSection[]) {
       rememberContact(c);
       rememberSession(page, { ...c, leadId });
       setEntered(c);
+      if (!LIVE_LEADS) return;
       const s = sectionsRef.current;
       const sig = signature(c, s);
       lastSentRef.current = sig;
@@ -137,6 +141,7 @@ export function useLeadSync(page: LeadPage, sections: LeadSection[]) {
     if (!contact) return { ok: false, error: "Enter your name and mobile number first." };
     clearTimeout(timerRef.current);
     const s = sectionsRef.current;
+    if (!LIVE_LEADS) return sendQuote(contact, s, hpRef.current);
     const r = await postLead({ ...contact, leadId: leadIdFor(), page, event: "send", sections: s, hp: hpRef.current });
     if (r.ok) {
       lastSentRef.current = signature(contact, s);

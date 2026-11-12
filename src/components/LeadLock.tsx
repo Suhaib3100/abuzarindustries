@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Lock, ArrowRight } from "lucide-react";
-import { cleanIndianMobile, cleanLeadName, type LeadContact } from "@/lib/lead";
+import { cleanIndianMobile, cleanLeadName, LIVE_LEADS, type LeadContact } from "@/lib/lead";
 
 /**
  * Covers a quote tool until the visitor enters a real name and a 10-digit mobile number.
@@ -156,8 +156,10 @@ function LeadForm({
       </button>
 
       <p className="mt-4 text-[11.5px] leading-relaxed text-ink-soft/70">
-        We save your name, number and the sizes you type, even if you don&apos;t press Send, so we can call you
-        back with a price. We use them only for your enquiry and don&apos;t share them.
+        {LIVE_LEADS
+          ? "We save your name, number and the sizes you type, even if you don't press Send, so we can call you back with a price. "
+          : "When you press Send, we save your name, number and sizes so we can call you back with a price. "}
+        We use them only for your enquiry and don&apos;t share them.
       </p>
     </form>
   );
