@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Printer, Send, X } from "lucide-react";
 import {
   cft as cftCalc,
@@ -11,13 +11,11 @@ import {
   rupeesInWords,
 } from "@/lib/quote";
 import { PRICES } from "@/lib/business";
+import LeadLock from "@/components/LeadLock";
+import { phoneDisplay, type LeadSection } from "@/lib/lead";
+import { useLeadSync } from "@/lib/useLeadSync";
 
 const PHONE = "919845378626";
-
-/** Unofficial Cut Size inbox — override with NEXT_PUBLIC_QUOTE_API_URL. */
-const QUOTE_API =
-  process.env.NEXT_PUBLIC_QUOTE_API_URL ||
-  "https://safa-unofficial.vercel.app/api/quotation-from-site";
 
 interface Row {
   id: number;
@@ -67,9 +65,6 @@ export default function CalculatorContent() {
   ]);
   const [quoteNo, setQuoteNo] = useState("");
   const [date, setDate] = useState("");
-  const [customer, setCustomer] = useState("");
-  const [phone, setPhone] = useState("");
-  const [hp, setHp] = useState(""); // honeypot
   const [sending, setSending] = useState(false);
   const [sendMsg, setSendMsg] = useState("");
   const [gstOn, setGstOn] = useState(false);
@@ -183,6 +178,21 @@ export default function CalculatorContent() {
   const grand = Math.round((subtotal + gstAmt) * 100) / 100;
   const hasData = sections.some((s) => sectionMeasure(s) > 0);
 
+  // What the visitor has typed, as sent live to the yard's Cut Size app.
+  const leadSections = useMemo<LeadSection[]>(
+    () =>
+      sections.map((s) => ({
+        wood: s.wood.trim(),
+        rate: +s.rate || 0,
+        rows: s.rows.map((r) => ({ l: +r.l || 0, w: +r.w || 0, t: +r.t || 0, pcs: +r.pcs || 0 })),
+      })),
+    [sections],
+  );
+  const lead = useLeadSync("calculator", leadSections);
+  const customer = lead.contact?.name ?? "";
+  const phone = lead.contact?.phone ?? "";
+  const unlocked = !!lead.contact;
+
   // ---- actions ----
   const doPrint = () => {
     commitQuotationNo(quoteNo);
@@ -193,7 +203,7 @@ export default function CalculatorContent() {
     let m = `*QUOTATION — Abuzar Industries*\n`;
     m += `Date: ${date}\n`;
     if (customer) m += `Party: ${customer}\n`;
-    if (phone) m += `Phone: ${phone}\n`;
+    if (phone) m += `Phone: +91 ${phoneDisplay(phone)}\n`;
     sections.forEach((s) => {
       if (sectionMeasure(s) <= 0) return;
       m += `\n*${s.wood}* @ ₹${s.rate}/cft\n`;
@@ -215,67 +225,28 @@ export default function CalculatorContent() {
     window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(buildWhatsAppMsg())}`, "_blank");
   };
 
-  /** Save into Cut Size → Website Quotations, then ping WhatsApp. */
+  /** Mark the live lead as sent in Cut Size (Website Leads), and ping WhatsApp. */
   const sendToUs = async () => {
     if (sending) return;
     setSendMsg("");
-    if (!customer.trim()) {
-      setSendMsg("Enter customer name first.");
+    if (!unlocked) {
+      setSendMsg("Enter your name and mobile number first.");
       return;
     }
     if (!hasData) {
-      setSendMsg("Enter at least one L × W × T line.");
-      return;
-    }
-
-    const payloadSections = sections
-      .map((s) => {
-        const rows = s.rows
-          .map((r) => ({
-            l: +r.l || 0,
-            w: +r.w || 0,
-            t: +r.t || 0,
-            pcs: Math.max(1, +r.pcs || 1),
-          }))
-          .filter((r) => r.l > 0 && r.w > 0 && r.t > 0);
-        if (!rows.length) return null;
-        return {
-          woodType: s.wood.trim() || "Teak Wood",
-          rate: +s.rate || 0,
-          rows,
-        };
-      })
-      .filter(Boolean);
-
-    if (!payloadSections.length) {
       setSendMsg("Enter at least one full L × W × T line.");
       return;
     }
-
     setSending(true);
-    try {
-      const res = await fetch(QUOTE_API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: customer.trim(),
-          phone: phone.trim(),
-          sections: payloadSections,
-          website: hp,
-        }),
-      });
-      if (!res.ok) {
-        const body = (await res.json().catch(() => null)) as { error?: string } | null;
-        throw new Error(body?.error || "Could not save — opening WhatsApp");
-      }
-      setSendMsg("Sent to Abuzar · check Website Quotations in Cut Size");
-      window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(buildWhatsAppMsg())}`, "_blank");
-    } catch (e) {
-      setSendMsg(e instanceof Error ? e.message : "Could not send");
-      window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(buildWhatsAppMsg())}`, "_blank");
-    } finally {
-      setSending(false);
-    }
+    // Open WhatsApp in the click itself (pop-up blockers), then save to the yard.
+    window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(buildWhatsAppMsg())}`, "_blank");
+    const r = await lead.send();
+    setSending(false);
+    setSendMsg(
+      r.ok
+        ? "Sent ✓ We will call or WhatsApp you soon."
+        : "Could not save on our side. WhatsApp has opened with your sizes: please press send there.",
+    );
   };
 
   return (
@@ -295,21 +266,21 @@ export default function CalculatorContent() {
             <div className="flex items-center gap-2">
               <button
                 onClick={sendToUs}
-                disabled={!hasData || sending}
+                disabled={!unlocked || !hasData || sending}
                 className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-walnut text-paper text-xs font-semibold hover:bg-walnut-2 transition-colors disabled:opacity-30"
               >
                 <Send size={14} /> {sending ? "Sending…" : "Send to us"}
               </button>
               <button
                 onClick={sendWhatsApp}
-                disabled={!hasData}
+                disabled={!unlocked || !hasData}
                 className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-green text-paper text-xs font-semibold hover:bg-green/90 transition-colors disabled:opacity-30"
               >
                 WhatsApp
               </button>
               <button
                 onClick={doPrint}
-                disabled={!hasData}
+                disabled={!unlocked || !hasData}
                 className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-walnut/25 text-walnut text-xs font-semibold hover:bg-walnut/5 transition-colors disabled:opacity-30"
               >
                 <Printer size={14} /> Print
@@ -324,6 +295,18 @@ export default function CalculatorContent() {
 
       {/* the sheet */}
       <div className="max-w-[900px] mx-auto px-4 pt-6">
+        {unlocked && (
+          <div className="no-print mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-walnut/10 bg-paper/80 px-3.5 py-2 text-sm">
+            <span className="text-ink-soft">
+              Quote for <b className="text-walnut">{customer}</b>
+              <span className="font-mono"> · +91 {phoneDisplay(phone)}</span>
+            </span>
+            <button type="button" onClick={lead.relock} className="text-xs font-semibold text-ochre hover:underline underline-offset-2">
+              Change
+            </button>
+          </div>
+        )}
+        <LeadLock locked={!unlocked} prefill={lead.prefill} onUnlock={lead.unlock}>
         <div id="qprint" className="qsheet">
           {/* diagonal watermark */}
           <div className="qwatermark-wrap">
@@ -352,35 +335,13 @@ export default function CalculatorContent() {
             <div className="qh-cust">
               <div className="qh-cell">
                 <span className="qh-lab">Customer</span>
-                <input
-                  className="qh-input"
-                  value={customer}
-                  placeholder="Party name"
-                  onChange={(e) => setCustomer(e.target.value)}
-                />
+                <input className="qh-input" value={customer} placeholder="Party name" readOnly aria-label="Customer" />
               </div>
               <div className="qh-cell">
                 <span className="qh-lab">Phone</span>
-                <input
-                  className="qh-input"
-                  value={phone}
-                  placeholder="Mobile"
-                  inputMode="tel"
-                  onChange={(e) => setPhone(e.target.value.replace(/[^\d+\s-]/g, "").slice(0, 20))}
-                />
+                <input className="qh-input" value={phone ? "+91 " + phoneDisplay(phone) : ""} placeholder="Mobile" readOnly aria-label="Phone" />
               </div>
             </div>
-            {/* honeypot — hidden from humans */}
-            <input
-              type="text"
-              name="website"
-              value={hp}
-              onChange={(e) => setHp(e.target.value)}
-              tabIndex={-1}
-              autoComplete="off"
-              aria-hidden
-              className="absolute opacity-0 pointer-events-none h-0 w-0 overflow-hidden"
-            />
           </div>
 
           {/* wood sections */}
@@ -510,6 +471,7 @@ export default function CalculatorContent() {
             This is a computer-generated quotation from abuzarindustries.in. Prices are indicative and subject to change based on current market rates and availability. A final invoice will be issued upon order confirmation.
           </p>
         </div>
+        </LeadLock>
       </div>
     </div>
   );

@@ -1,10 +1,13 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Trash2, Send, Calculator, RotateCcw } from "lucide-react";
+import { Plus, Trash2, Send, RotateCcw } from "lucide-react";
 import VideoFrame from "./VideoFrame";
+import LeadLock from "./LeadLock";
 import { PRICES, rupees } from "@/lib/business";
+import { phoneDisplay, type LeadSection } from "@/lib/lead";
+import { useLeadSync } from "@/lib/useLeadSync";
 
 interface Row {
   id: number;
@@ -32,22 +35,14 @@ function rateFor(wood: string): { rate: number; label: string } | null {
 
 const PHONE = "919845378626";
 
-/** Unofficial app public ingest — override with NEXT_PUBLIC_QUOTE_API_URL. */
-const QUOTE_API =
-  process.env.NEXT_PUBLIC_QUOTE_API_URL ||
-  "https://safa-unofficial.vercel.app/api/quotation-from-site";
-
 export default function QuoteTool() {
   const [rows, setRows] = useState<Row[]>([
     { id: 1, l: "", w: "", t: "", pcs: "1" },
   ]);
   const [woodType, setWoodType] = useState("");
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [err, setErr] = useState("");
-  const [hp, setHp] = useState(""); // honeypot
   const [nextId, setNextId] = useState(2);
 
   const addRow = () => {
@@ -77,10 +72,25 @@ export default function QuoteTool() {
   const rate = rateFor(woodType);
   const estimate = rate ? Math.round(totalCft * rate.rate) : null;
 
+  // What the visitor has typed, as sent live to the yard's Cut Size app.
+  const leadSections = useMemo<LeadSection[]>(
+    () => [
+      {
+        wood: woodType.trim(),
+        rate: rate?.rate ?? 0,
+        rows: rows.map((r) => ({ l: +r.l || 0, w: +r.w || 0, t: +r.t || 0, pcs: parseInt(r.pcs) || 0 })),
+      },
+    ],
+    [rows, woodType, rate],
+  );
+  const lead = useLeadSync("home", leadSections);
+  const name = lead.contact?.name ?? "";
+  const phone = lead.contact?.phone ?? "";
+
   const buildMessage = useCallback(() => {
     let msg = `*Timber Quotation Request*\n`;
     if (name) msg += `Name: ${name}\n`;
-    if (phone) msg += `Phone: ${phone}\n`;
+    if (phone) msg += `Phone: +91 ${phoneDisplay(phone)}\n`;
     if (woodType) msg += `Wood: ${woodType}\n`;
     msg += `\n*Dimensions (L×W×T × Pcs):*\n`;
     rows.forEach((r, i) => {
@@ -104,55 +114,27 @@ export default function QuoteTool() {
   const sendToUs = async () => {
     if (sending) return;
     setErr("");
-    if (!name.trim()) {
-      setErr("Please enter your name.");
+    setSent(false);
+    if (!lead.contact) {
+      setErr("Enter your name and mobile number first.");
       return;
     }
     if (!woodType.trim()) {
       setErr("Please choose a wood type.");
       return;
     }
-    const payloadRows = rows
-      .map((r) => ({
-        l: parseFloat(r.l) || 0,
-        w: parseFloat(r.w) || 0,
-        t: parseFloat(r.t) || 0,
-        pcs: parseInt(r.pcs) || 1,
-      }))
-      .filter((r) => r.l > 0 && r.w > 0 && r.t > 0);
-    if (!payloadRows.length) {
+    if (!rows.some((r) => +r.l > 0 && +r.w > 0 && +r.t > 0)) {
       setErr("Enter at least one full L × W × T line.");
       return;
     }
 
     setSending(true);
-    try {
-      const res = await fetch(QUOTE_API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: name.trim(),
-          phone: phone.trim(),
-          woodType: woodType.trim(),
-          rows: payloadRows,
-          website: hp, // honeypot
-        }),
-      });
-      if (!res.ok) {
-        const body = (await res.json().catch(() => null)) as { error?: string } | null;
-        throw new Error(body?.error || "Could not send — try WhatsApp");
-      }
-      setSent(true);
-      // Also open WhatsApp so the yard gets an instant ping
-      window.open(`https://wa.me/${PHONE}?text=${buildMessage()}`, "_blank");
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Could not send");
-      // Fallback: still open WhatsApp so the customer isn't stuck
-      window.open(`https://wa.me/${PHONE}?text=${buildMessage()}`, "_blank");
-      setSent(true);
-    } finally {
-      setSending(false);
-    }
+    // Open WhatsApp in the click itself (pop-up blockers), then save to the yard.
+    window.open(`https://wa.me/${PHONE}?text=${buildMessage()}`, "_blank");
+    const r = await lead.send();
+    setSending(false);
+    if (r.ok) setSent(true);
+    else setErr("We could not save it on our side (" + (r.error || "error") + "). WhatsApp has opened with your sizes: please press send there, or call us.");
   };
 
   return (
@@ -197,64 +179,41 @@ export default function QuoteTool() {
           viewport={{ once: true, margin: "-60px" }}
           className="relative bg-paper border border-walnut/5 rounded-2xl p-6 sm:p-8 shadow-lg shadow-walnut/5"
         >
-          {/* honeypot — leave empty */}
-          <input
-            type="text"
-            name="website"
-            value={hp}
-            onChange={(e) => setHp(e.target.value)}
-            tabIndex={-1}
-            autoComplete="off"
-            aria-hidden
-            className="absolute opacity-0 pointer-events-none h-0 w-0"
-          />
+          <LeadLock locked={!lead.contact} prefill={lead.prefill} onUnlock={lead.unlock} cta="Start my quote">
+          {/* Who this quote is for (entered on the lock screen) */}
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-4 px-3.5 py-2.5 rounded-xl bg-panel/70 border border-walnut/5 text-sm">
+            <span className="text-ink-soft">
+              Quote for <b className="text-walnut">{name || "—"}</b>
+              {phone ? <span className="font-mono"> · +91 {phoneDisplay(phone)}</span> : null}
+            </span>
+            <button
+              type="button"
+              onClick={lead.relock}
+              className="text-xs font-semibold text-ochre hover:underline underline-offset-2"
+            >
+              Change
+            </button>
+          </div>
 
-          {/* Customer info */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-            <div>
-              <label className="block text-xs font-semibold tracking-wider uppercase text-ink-soft/60 mb-1.5">
-                Your Name
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Rajesh"
-                className="w-full px-3.5 py-2.5 text-sm rounded-xl bg-panel border border-walnut/10 focus:border-ochre/40 focus:ring-2 focus:ring-ochre/10 outline-none transition-[border-color,box-shadow] text-ink placeholder:text-ink-soft/30"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold tracking-wider uppercase text-ink-soft/60 mb-1.5">
-                Phone (optional)
-              </label>
-              <input
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="+91 98765 43210"
-                className="w-full px-3.5 py-2.5 text-sm rounded-xl bg-panel border border-walnut/10 focus:border-ochre/40 focus:ring-2 focus:ring-ochre/10 outline-none transition-[border-color,box-shadow] text-ink placeholder:text-ink-soft/30"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold tracking-wider uppercase text-ink-soft/60 mb-1.5">
-                Wood Type
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={woodType}
-                  onChange={(e) => setWoodType(e.target.value)}
-                  placeholder="e.g. Ghana Teak"
-                  list="woods"
-                  className="w-full px-3.5 py-2.5 text-sm rounded-xl bg-panel border border-walnut/10 focus:border-ochre/40 focus:ring-2 focus:ring-ochre/10 outline-none transition-[border-color,box-shadow] text-ink placeholder:text-ink-soft/30"
-                />
-                <datalist id="woods">
-                  {COMMON_WOODS.map((w) => (
-                    <option key={w} value={w} />
-                  ))}
-                </datalist>
-              </div>
-            </div>
+          {/* Wood */}
+          <div className="mb-6">
+            <label htmlFor="quote-wood" className="block text-xs font-semibold tracking-wider uppercase text-ink-soft/60 mb-1.5">
+              Wood Type
+            </label>
+            <input
+              id="quote-wood"
+              type="text"
+              value={woodType}
+              onChange={(e) => setWoodType(e.target.value)}
+              placeholder="e.g. Teak Wood"
+              list="woods"
+              className="w-full sm:max-w-xs px-3.5 py-2.5 text-sm rounded-xl bg-panel border border-walnut/10 focus:border-ochre/40 focus:ring-2 focus:ring-ochre/10 outline-none transition-[border-color,box-shadow] text-ink placeholder:text-ink-soft/30"
+            />
+            <datalist id="woods">
+              {COMMON_WOODS.map((w) => (
+                <option key={w} value={w} />
+              ))}
+            </datalist>
           </div>
 
           {/* Table header */}
@@ -274,9 +233,8 @@ export default function QuoteTool() {
                 onClick={() => {
                   setRows([{ id: Date.now(), l: "", w: "", t: "", pcs: "1" }]);
                   setWoodType("");
-                  setName("");
-                  setPhone("");
                   setSent(false);
+                  setErr("");
                 }}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-walnut/10 text-ink-soft text-xs font-semibold hover:bg-panel transition-colors"
               >
@@ -448,10 +406,11 @@ export default function QuoteTool() {
                 exit={{ opacity: 0, height: 0 }}
                 className="mt-4 p-4 rounded-xl bg-green/5 border border-green/10 text-green text-sm"
               >
-                ✅ Quotation received! We&apos;ll get back to you shortly.
+                ✅ Sent. We have your sizes and will call or WhatsApp you on +91 {phoneDisplay(phone)}.
               </motion.div>
             )}
           </AnimatePresence>
+          </LeadLock>
         </motion.div>
       </div>
     </section>
