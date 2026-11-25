@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Fraunces } from "next/font/google";
+import { Saira_Condensed, Inter, Fraunces } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
@@ -8,9 +8,17 @@ import JsonLd from "@/components/JsonLd";
 import { BUSINESS, GOOGLE, HOURS, SAME_AS, SITE_URL } from "@/lib/business";
 import { HOME_OG, openGraph } from "@/lib/seo";
 
+// Labels and the calculator sheet are sized for this condensed face; only 600 and 700 are used.
+const display = Saira_Condensed({
+  variable: "--font-display",
+  subsets: ["latin"],
+  weight: ["600", "700"],
+});
+
 const serif = Fraunces({
   variable: "--font-serif",
   subsets: ["latin"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -31,7 +39,7 @@ const BUSINESS_LD = {
   email: BUSINESS.email,
   description:
     "Teak wood (Ghana, Togo, African; Burma on order), white teak and neem wood supplier in Chitradurga since 1995. Cut to any size; delivery charged by distance.",
-  image: `${SITE_URL}/images/logo-brand-og.png`,
+  image: `${SITE_URL}/images/logo-brand-og.jpg`,
   logo: `${SITE_URL}/images/logo-brand-512.png`,
   address: {
     "@type": "PostalAddress",
@@ -87,7 +95,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${serif.variable} ${sans.variable} scroll-smooth`}
+      className={`${display.variable} ${serif.variable} ${sans.variable} scroll-smooth`}
     >
       <head>
         {/* Skip link — first focusable element for keyboard users */}

@@ -23,21 +23,21 @@ export default function HeroVideo() {
   return (
     <div className="relative h-[240px] w-full sm:h-[360px] lg:h-[520px]">
       <div className="absolute inset-0 overflow-hidden rounded-[28px] border border-walnut/10 bg-gradient-to-br from-panel/80 via-paper/40 to-ochre-soft/30 shadow-[0_40px_90px_-40px_rgba(90,61,36,0.45)]">
-        {isMobile ? (
-          <Image
-            src="/timber-hero-poster.jpg"
-            alt="Teak wood at the Abuzar Industries yard, Chitradurga"
-            fill
-            className="object-cover"
-            sizes="100vw"
-            priority
-          />
-        ) : (
+        {/* The photo stays underneath so desktops never flash blank while the video buffers. */}
+        <Image
+          src="/timber-hero-poster.jpg"
+          alt="Teak wood at the Abuzar Industries yard, Chitradurga"
+          fill
+          className="object-cover"
+          sizes="(max-width: 1023px) 100vw, 45vw"
+          preload
+        />
+        {!isMobile && (
           <video
             ref={ref}
-            className={`h-full w-full object-cover transition-opacity duration-700 ${ready ? "opacity-100" : "opacity-0"}`}
+            aria-hidden
+            className={`relative h-full w-full object-cover transition-opacity duration-700 ${ready ? "opacity-100" : "opacity-0"}`}
             src="/videos/timber-hero.mp4"
-            poster="/timber-hero-poster.jpg"
             autoPlay
             muted
             loop

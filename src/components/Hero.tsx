@@ -58,10 +58,19 @@ export default function Hero() {
             </motion.div>
 
             <h1 className="t-display text-walnut">
-              <WordReveal text="Premium Teak Wood," />
+              <WordReveal text="Premium Teak Wood," />{" "}
               <br />
-              <span className="italic font-[500]">
-                <WordReveal text="Cut Your Way" wordClassName="gold-text" />
+              {/* One reveal for the whole phrase: the gradient must sit on the animated element itself
+                  (an ancestor's background-clip doesn't reach it), and the padding keeps the italic overhang unclipped. */}
+              <span className="inline-block overflow-hidden leading-[1.15] pr-[0.15em] -mr-[0.15em]">
+                <motion.span
+                  className="inline-block gold-text italic font-[500] pr-[0.15em]"
+                  initial={{ transform: "translateY(110%)", opacity: 0 }}
+                  animate={{ transform: "translateY(0%)", opacity: 1 }}
+                  transition={{ duration: 0.55, delay: 0.12, ease: EASE }}
+                >
+                  Cut Your Way
+                </motion.span>
               </span>
             </h1>
 

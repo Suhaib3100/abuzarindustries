@@ -59,9 +59,7 @@ export function AnimatedCounter({
 }
 
 /* ── 3. Word-by-word heading ── */
-// Gradient text (gold-text) must go on wordClassName: background-clip on the outer span
-// does not reach the separately animated word layers, so they render transparent.
-export function WordReveal({ text, className, wordClassName = "" }: { text: string; className?: string; wordClassName?: string }) {
+export function WordReveal({ text, className }: { text: string; className?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-8% 0px" });
   const words = text.split(" ");
@@ -70,7 +68,7 @@ export function WordReveal({ text, className, wordClassName = "" }: { text: stri
       {words.map((w, i) => (
         <span key={i} className="inline-block overflow-hidden leading-[1.15]">
           <motion.span
-            className={`inline-block ${wordClassName}`}
+            className="inline-block"
             initial={{ transform: "translateY(110%)", opacity: 0 }}
             animate={inView ? { transform: "translateY(0%)", opacity: 1 } : { transform: "translateY(110%)", opacity: 0 }}
             transition={{ duration: 0.45, delay: i * 0.03, ease: EASE }}

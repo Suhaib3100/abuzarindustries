@@ -17,8 +17,6 @@ const products = [
     poster: "/plank-teak-poster.jpg",
     specs: "Ghana · Togo · African",
     price: rupees(PRICES.teakB),
-    dims: { l: 96, w: 8, t: 2 },
-    species: "Teak Wood",
     desc: "Ghana, Togo and African teak, dried to about 10% moisture. Burma teak on order.",
     tag: "Best Seller",
   },
@@ -29,8 +27,6 @@ const products = [
     poster: "/plank-white-teak-poster.jpg",
     specs: "Doors · Windows · Frames",
     price: rupees(PRICES.whiteTeak),
-    dims: { l: 96, w: 6, t: 2 },
-    species: "White Teak",
     desc: "Pale, workable and clean-grained — a value choice for interior woodwork.",
     tag: "Popular",
   },
@@ -41,8 +37,6 @@ const products = [
     poster: null as string | null,
     specs: "Outdoor · Durable",
     price: rupees(PRICES.neem),
-    dims: { l: 72, w: 6, t: 2 },
-    species: "Neem Wood",
     desc: "Hard wood that insects tend to avoid, for outdoor furniture and general build.",
     tag: "Value",
   },
@@ -56,7 +50,7 @@ const features = [
 ];
 
 export default function Products() {
-  const [view3d, setView3d] = useState<string | null>(null);
+  const [playing, setPlaying] = useState<string | null>(null);
 
   return (
     <section id="products" className="py-16 sm:py-24 relative">
@@ -82,7 +76,7 @@ export default function Products() {
               <div className="card-premium group block h-full rounded-2xl overflow-hidden">
                 {/* image / video area */}
                 <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-panel/60 to-ochre-soft/20">
-                  {view3d === p.name && p.video ? (
+                  {playing === p.name && p.video ? (
                     <VideoFrame src={p.video} poster={p.poster ?? p.image} className="h-full w-full" tint={false} playOnMobile />
                   ) : (
                     <Image
@@ -107,11 +101,11 @@ export default function Products() {
                     </div>
                     {p.video && (
                       <button
-                        onClick={() => setView3d((cur) => (cur === p.name ? null : p.name))}
+                        onClick={() => setPlaying((cur) => (cur === p.name ? null : p.name))}
                         className="z-10 h-8 w-8 grid place-items-center rounded-full bg-paper/90 text-walnut transition-transform duration-300 hover:scale-110"
-                        aria-label={view3d === p.name ? "Show photo" : "Play video"}
+                        aria-label={playing === p.name ? "Show photo" : "Play video"}
                       >
-                        {view3d === p.name ? <ImageIcon size={14} /> : <Play size={14} />}
+                        {playing === p.name ? <ImageIcon size={14} /> : <Play size={14} />}
                       </button>
                     )}
                   </div>

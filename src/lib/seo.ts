@@ -12,7 +12,7 @@ export function openGraph(title: string, description: string, path?: string): Me
     siteName: BUSINESS.name,
     type: "website",
     locale: "en_IN",
-    images: [{ url: "/images/logo-brand-og.png", width: 1200, height: 1200, alt: BUSINESS.name }],
+    images: [{ url: "/images/logo-brand-og.jpg", width: 1200, height: 1200, alt: BUSINESS.name }],
   };
 }
 

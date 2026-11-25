@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MapPin, Phone, Mail, Clock, Send, ArrowUpRight } from "lucide-react";
 import { Reveal, Stagger, StaggerItem } from "./motion/Reveal";
 import { ADDRESS_LINE, GOOGLE, HOURS_SHORT } from "@/lib/business";
@@ -23,6 +23,11 @@ const contacts = [
 
 export default function Contact() {
   const [showMap, setShowMap] = useState(false);
+  const mapRef = useRef<HTMLIFrameElement>(null);
+  // The "Show map" button disappears when pressed; hand keyboard focus to the map instead of losing it.
+  useEffect(() => {
+    if (showMap) mapRef.current?.focus();
+  }, [showMap]);
   return (
     <section id="contact" className="py-24 sm:py-32 relative overflow-hidden">
       <div className="pointer-events-none absolute bottom-0 left-0 w-[26rem] h-[26rem] bg-ochre/6 rounded-full blur-3xl" />
@@ -153,6 +158,7 @@ export default function Contact() {
                 alt="Scan to rate us on Google"
                 width={120}
                 height={120}
+                loading="lazy"
                 className="mx-auto rounded-lg bg-paper p-2 shadow-sm group-hover:shadow-md transition-shadow"
               />
               <span className="mt-2 block text-[11px] font-semibold tracking-wider uppercase text-ink-soft/60">
@@ -172,6 +178,7 @@ export default function Contact() {
           <div className="rounded-2xl overflow-hidden border border-walnut/10 shadow-md">
             {showMap ? (
               <iframe
+                ref={mapRef}
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1940!2d76.3906535!3d14.2304243!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bba75de8a42ad97%3A0x9a8be15dab4a6208!2sABUZAR%20INDUSTRIES!5e0!3m2!1sen!2sin!4v1"
                 width="100%"
                 height="280"

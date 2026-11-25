@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Shield, Users, Star, CalendarDays } from "lucide-react";
 import VideoFrame from "./VideoFrame";
 import { Reveal, Stagger, StaggerItem } from "./motion/Reveal";
@@ -47,8 +48,7 @@ export default function About({ years }: { years: number }) {
                   { initials: "MA", name: "Mohammed Afsar", role: "Owner", img: "/images/afsar.jpg" },
                 ].map((o) => (
                   <div key={o.name} className="card-premium p-4 rounded-xl flex items-center gap-4">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={o.img} alt={o.name} className="w-12 h-12 rounded-full object-cover ring-2 ring-ochre/15" />
+                    <Image src={o.img} alt={o.name} width={48} height={48} className="w-12 h-12 rounded-full object-cover ring-2 ring-ochre/15" />
                     <div>
                       <div className="font-[family:var(--font-serif)] font-semibold text-sm text-walnut">{o.name}</div>
                       <div className="eyebrow text-[0.6rem] text-ink-soft/60 mt-0.5">{o.role}</div>
