@@ -147,6 +147,7 @@ export default function ProductsContent() {
                         className="h-full w-full"
                         tint={false}
                         rate={0.5}
+                        playOnMobile
                       />
                     ) : (
                       <PlankViewer

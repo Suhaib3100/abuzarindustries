@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { MapPin, Phone, Mail, Clock, Send, ArrowUpRight } from "lucide-react";
 import { Reveal, Stagger, StaggerItem } from "./motion/Reveal";
 import { ADDRESS_LINE, GOOGLE, HOURS_SHORT } from "@/lib/business";
@@ -21,6 +22,7 @@ const contacts = [
 ];
 
 export default function Contact() {
+  const [showMap, setShowMap] = useState(false);
   return (
     <section id="contact" className="py-24 sm:py-32 relative overflow-hidden">
       <div className="pointer-events-none absolute bottom-0 left-0 w-[26rem] h-[26rem] bg-ochre/6 rounded-full blur-3xl" />
@@ -168,16 +170,42 @@ export default function Contact() {
             </div>
           </div>
           <div className="rounded-2xl overflow-hidden border border-walnut/10 shadow-md">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1940!2d76.3906535!3d14.2304243!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bba75de8a42ad97%3A0x9a8be15dab4a6208!2sABUZAR%20INDUSTRIES!5e0!3m2!1sen!2sin!4v1"
-              width="100%"
-              height="280"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Abuzar Industries — KSSIDC Industrial Area, Chitradurga"
-            />
+            {showMap ? (
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1940!2d76.3906535!3d14.2304243!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bba75de8a42ad97%3A0x9a8be15dab4a6208!2sABUZAR%20INDUSTRIES!5e0!3m2!1sen!2sin!4v1"
+                width="100%"
+                height="280"
+                style={{ border: 0 }}
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Abuzar Industries — KSSIDC Industrial Area, Chitradurga"
+              />
+            ) : (
+              // Google's embed pulls ~700 KB of scripts, so it only loads when asked for.
+              <div className="relative h-[280px] flex flex-col items-center justify-center gap-4 bg-panel bg-[radial-gradient(rgba(90,61,36,0.10)_0.6px,transparent_0.6px)] [background-size:18px_18px] text-center px-6">
+                <MapPin size={28} className="text-ochre" strokeWidth={1.75} />
+                <p className="text-sm text-ink-soft/80 max-w-xs">
+                  KSSIDC Industrial Area, DVG Road, Chitradurga
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowMap(true)}
+                    className="px-5 py-2.5 rounded-full bg-walnut text-paper text-sm font-semibold hover:bg-walnut-2 transition-colors"
+                  >
+                    Show map
+                  </button>
+                  <a
+                    href={GOOGLE.mapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full border border-walnut/15 text-walnut text-sm font-semibold hover:bg-paper transition-colors"
+                  >
+                    Directions <ArrowUpRight size={14} />
+                  </a>
+                </div>
+              </div>
+            )}
           </div>
           <p className="mt-2 text-xs text-center text-ink-soft/40">
             {ADDRESS_LINE}

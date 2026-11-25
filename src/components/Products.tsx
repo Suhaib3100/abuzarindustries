@@ -2,25 +2,10 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import dynamic from "next/dynamic";
-import { Ruler, Building2, Truck, BadgeIndianRupee, Box, ImageIcon, ArrowUpRight } from "lucide-react";
+import { Ruler, Building2, Truck, BadgeIndianRupee, Play, ImageIcon } from "lucide-react";
 import { Reveal, Stagger, StaggerItem } from "./motion/Reveal";
 import VideoFrame from "./VideoFrame";
 import { PRICES, rupees } from "@/lib/business";
-
-const PlankViewer = dynamic(() => import("@/components/three/PlankViewer"), {
-  ssr: false,
-  loading: () => (
-    <div className="flex h-full w-full items-center justify-center bg-panel/40">
-      <span className="relative flex h-7 w-7">
-        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ochre/30" />
-        <span className="relative inline-flex h-7 w-7 items-center justify-center rounded-full bg-ochre/15">
-          <Box size={14} className="text-ochre" />
-        </span>
-      </span>
-    </div>
-  ),
-});
 
 const PHONE = "919845378626";
 
@@ -97,12 +82,8 @@ export default function Products() {
               <div className="card-premium group block h-full rounded-2xl overflow-hidden">
                 {/* image / video area */}
                 <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-panel/60 to-ochre-soft/20">
-                  {view3d === p.name ? (
-                    p.video ? (
-                      <VideoFrame src={p.video} poster={p.poster ?? p.image} className="h-full w-full" tint={false} />
-                    ) : (
-                      <PlankViewer length={p.dims.l} width={p.dims.w} thickness={p.dims.t} species={p.species} autoRotate />
-                    )
+                  {view3d === p.name && p.video ? (
+                    <VideoFrame src={p.video} poster={p.poster ?? p.image} className="h-full w-full" tint={false} playOnMobile />
                   ) : (
                     <Image
                       src={p.image}
@@ -124,13 +105,15 @@ export default function Products() {
                         <span className="text-xs font-normal text-paper/70"> /CFT</span>
                       </span>
                     </div>
-                    <button
-                      onClick={() => setView3d((cur) => (cur === p.name ? null : p.name))}
-                      className="z-10 h-8 w-8 grid place-items-center rounded-full bg-paper/90 text-walnut transition-transform duration-300 hover:scale-110"
-                      aria-label={view3d === p.name ? "Show photo" : "View in 3D"}
-                    >
-                      {view3d === p.name ? <ImageIcon size={14} /> : <Box size={14} />}
-                    </button>
+                    {p.video && (
+                      <button
+                        onClick={() => setView3d((cur) => (cur === p.name ? null : p.name))}
+                        className="z-10 h-8 w-8 grid place-items-center rounded-full bg-paper/90 text-walnut transition-transform duration-300 hover:scale-110"
+                        aria-label={view3d === p.name ? "Show photo" : "Play video"}
+                      >
+                        {view3d === p.name ? <ImageIcon size={14} /> : <Play size={14} />}
+                      </button>
+                    )}
                   </div>
                 </div>
                 {/* body */}

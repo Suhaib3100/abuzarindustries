@@ -18,7 +18,7 @@ export default function Footer() {
           <div>
             <div className="flex items-center gap-3 mb-5">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/logo-brand-512.png" alt="Abuzar Industries" className="w-11 h-11 object-contain" />
+              <img src="/images/logo-128.png" alt="Abuzar Industries" className="w-11 h-11 object-contain" />
               <div>
                 <span className="font-[family:var(--font-serif)] font-semibold text-xl text-paper">
                   Abuzar <span className="gold-text">Industries</span>

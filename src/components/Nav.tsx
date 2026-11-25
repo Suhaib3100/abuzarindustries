@@ -40,7 +40,7 @@ export default function Nav() {
           <a href="/" className="flex items-center gap-2.5 group">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/images/logo-brand-512.png"
+              src="/images/logo-128.png"
               alt="Abuzar Industries"
               className="w-10 h-10 object-contain transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:rotate-[-4deg] group-hover:scale-105"
             />

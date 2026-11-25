@@ -60,8 +60,8 @@ export default function Hero() {
             <h1 className="t-display text-walnut">
               <WordReveal text="Premium Teak Wood," />
               <br />
-              <span className="gold-text italic font-[500]">
-                <WordReveal text="Cut Your Way" />
+              <span className="italic font-[500]">
+                <WordReveal text="Cut Your Way" wordClassName="gold-text" />
               </span>
             </h1>
 

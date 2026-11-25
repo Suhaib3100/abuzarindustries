@@ -1,38 +1,23 @@
 import type { Metadata } from "next";
-import { Saira_Condensed, Inter, Spline_Sans_Mono, Fraunces } from "next/font/google";
+import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
-import Preloader from "@/components/Preloader";
 import { ScrollProgress } from "@/components/motion/Patterns";
 import JsonLd from "@/components/JsonLd";
 import { BUSINESS, GOOGLE, HOURS, SAME_AS, SITE_URL } from "@/lib/business";
 import { HOME_OG, openGraph } from "@/lib/seo";
 
-const display = Saira_Condensed({
-  variable: "--font-display",
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-});
-
-// editorial serif for premium headings (variable font, full weight range)
 const serif = Fraunces({
   variable: "--font-serif",
   subsets: ["latin"],
-  style: ["normal", "italic"],
   display: "swap",
 });
 
 const sans = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-});
-
-const mono = Spline_Sans_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  display: "swap",
 });
 
 
@@ -102,7 +87,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${display.variable} ${serif.variable} ${sans.variable} ${mono.variable} scroll-smooth`}
+      className={`${serif.variable} ${sans.variable} scroll-smooth`}
     >
       <head>
         {/* Skip link — first focusable element for keyboard users */}
@@ -118,7 +103,6 @@ export default function RootLayout({
         <JsonLd data={BUSINESS_LD} />
         <JsonLd data={WEBSITE_LD} />
         <ScrollProgress />
-        <Preloader />
         <Nav />
         <main id="main-content" className="flex-1">{children}</main>
         <Footer />

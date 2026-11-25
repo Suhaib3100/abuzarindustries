@@ -27,8 +27,8 @@
   --color-danger: #A33B2A;
   --font-sans: "Inter", system-ui, sans-serif;
   --font-serif: "Fraunces", "Fraunces Fallback", Georgia, serif;
-  --font-display: "Saira Condensed", system-ui, sans-serif;
-  --font-mono: "Spline Sans Mono", ui-monospace, monospace;
+  --font-display: "Inter", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Segoe UI Mono", monospace;
 
   /* premium easing */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);

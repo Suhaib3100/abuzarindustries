@@ -3,7 +3,6 @@
 import { useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Trash2, Send, RotateCcw } from "lucide-react";
-import VideoFrame from "./VideoFrame";
 import LeadLock from "./LeadLock";
 import { PRICES, rupees } from "@/lib/business";
 import { phoneDisplay, type LeadSection } from "@/lib/lead";
@@ -139,16 +138,8 @@ export default function QuoteTool() {
 
   return (
     <section id="quote" className="py-24 sm:py-32 bg-panel/50 relative overflow-hidden">
-      {/* ambient grain-macro backdrop */}
-      <div className="pointer-events-none absolute inset-0 opacity-[0.12]">
-        <VideoFrame
-          src="/videos/grain-macro.mp4"
-          poster="/grain-macro-poster.jpg"
-          className="h-full w-full"
-          tint={false}
-        />
-        <div className="absolute inset-0 bg-panel/60" />
-      </div>
+      {/* subtle grain texture */}
+      <div className="pointer-events-none absolute inset-0 opacity-[0.04] bg-[radial-gradient(rgba(90,61,36,0.3)_0.5px,transparent_0.5px)] [background-size:20px_20px]" />
 
       <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}

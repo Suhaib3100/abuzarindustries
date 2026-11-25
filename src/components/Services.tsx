@@ -52,7 +52,7 @@ const services = [
     n: "06",
     title: "Instant WhatsApp Quoting",
     desc: "Use our calculator or message dimensions on WhatsApp — a professional quote within minutes.",
-    img: "/images/instant-whatsapp-quote.png",
+    img: "/images/instant-whatsapp-quote.jpg",
   },
 ];
 
@@ -101,7 +101,7 @@ export default function Services() {
                 {/* logo watermark */}
                 <div className="pointer-events-none absolute -right-6 -top-6 opacity-[0.04] transition-opacity duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-[0.08]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/images/logo-brand-512.png" alt="" className="w-28 h-28 object-contain" />
+                  <img src="/images/logo-128.png" alt="" className="w-28 h-28 object-contain" />
                 </div>
 
                 {/* content */}
