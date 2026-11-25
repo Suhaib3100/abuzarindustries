@@ -33,7 +33,7 @@ export default function About({ years }: { years: number }) {
           <Reveal>
             <div className="relative">
               <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-walnut/10 shadow-lg">
-                <VideoFrame src="/videos/timber-yard.mp4" poster="/timber-yard-poster.jpg" className="h-full w-full" />
+                <VideoFrame src="/videos/teak-ends-wall.mp4" poster="/teak-ends-wall-poster.jpg" className="h-full w-full" />
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-walnut/60 via-walnut/20 to-transparent">
                   <span className="font-[family:var(--font-serif)] font-semibold text-2xl text-paper drop-shadow">Since 1995</span>
                   <p className="text-sm text-paper/80 mt-0.5 drop-shadow">Three generations of timber expertise</p>

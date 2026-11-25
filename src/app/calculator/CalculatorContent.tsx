@@ -14,6 +14,7 @@ import { PRICES } from "@/lib/business";
 import LeadLock from "@/components/LeadLock";
 import { phoneDisplay, type LeadSection } from "@/lib/lead";
 import { useLeadSync } from "@/lib/useLeadSync";
+import VideoFrame from "@/components/VideoFrame";
 
 const PHONE = "919845378626";
 
@@ -289,6 +290,30 @@ export default function CalculatorContent() {
             {sendMsg ? (
               <p className="text-[11px] text-ink-soft/80 max-w-[280px] text-right">{sendMsg}</p>
             ) : null}
+          </div>
+        </div>
+      </div>
+
+      {/* how CFT is worked out: a short loop of a teak plank measured with a tape and a rule (the grain is the
+          yard's own teak); on screen only, not printed */}
+      <div className="no-print max-w-[900px] mx-auto px-4 pt-6">
+        <div className="grid sm:grid-cols-[1.35fr_1fr] gap-4 items-center rounded-2xl border border-walnut/10 bg-paper/80 p-3 sm:p-4">
+          <VideoFrame
+            src="/videos/cft-measure.mp4"
+            poster="/cft-measure-poster.jpg"
+            className="aspect-video w-full rounded-xl"
+            tint={false}
+          />
+          <div className="px-1 sm:px-2">
+            <h2 className="font-[family:var(--font-display)] font-bold text-xl text-walnut leading-tight">
+              How is CFT calculated?
+            </h2>
+            <p className="mt-2 text-sm text-ink-soft/80 leading-relaxed">
+              Length in feet × width in inches × thickness in inches ÷ 144.
+            </p>
+            <p className="mt-1 text-sm text-ink-soft/80 leading-relaxed">
+              A 7 ft × 5 in × 3 in plank is 0.73 CFT. Fill in your sizes below and the sheet adds it up.
+            </p>
           </div>
         </div>
       </div>

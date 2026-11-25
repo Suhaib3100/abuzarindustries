@@ -139,11 +139,11 @@ export default function QuoteTool() {
 
   return (
     <section id="quote" className="py-24 sm:py-32 bg-panel/50 relative overflow-hidden">
-      {/* ambient grain-macro backdrop */}
+      {/* ambient backdrop: the grain of the yard's own teak */}
       <div className="pointer-events-none absolute inset-0 opacity-[0.12]">
         <VideoFrame
-          src="/videos/grain-macro.mp4"
-          poster="/grain-macro-poster.jpg"
+          src="/videos/teak-grain.mp4"
+          poster="/teak-grain-poster.jpg"
           className="h-full w-full"
           tint={false}
         />
